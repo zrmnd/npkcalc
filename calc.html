@@ -1,31 +1,40 @@
-<html>
+<!DOCTYPE html>
+<html lang="en-US">
+<meta charset="utf-8">
 
 <head>
 
 </head>
 <style>
 	table,
+	thead,
+	tbody,
+	tfoot,
 	tr,
-	td {
-
+	td, th {
+		
+		
 		border: 1px solid black;
-
-	}
-
-	table {
 		border-collapse: collapse;
-
-	}
-
-	th,
-	td {
 		padding: 10px;
 		text-align: left;
+
+	}
+
+	table{
+		
 	}
 
 	tr:hover {
 		background-color: #f5f5f5;
 	}
+
+
+
+	
+	
+
+	
 </style>
 <script src="db.js"></script>
 <script>
@@ -49,6 +58,16 @@
 		});
 		var selectedFertilizersViewHead = document.getElementById("selectedFertilizersViewHead");
 		selectedFertilizersViewHead.innerHTML = thead;
+
+		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
+		elements.forEach(function (item, index) {
+			tElementsAmount += "<td>" + "0" + "</td>";
+			//tElementsAmount += (umolUnits == false) ? "<td>" + "0" + ", мг/л</td>" : "<td>" + "0" + ", ммоль/л</td>";
+			//<tr id="elementsAmountView"></tr>
+		});
+		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
+		var elementsAmountView = document.getElementById("elementsAmountView");
+		elementsAmountView.innerHTML = tElementsAmount;
 	}
 
 	function selectedFertilizersModelUpdate() {
@@ -189,18 +208,41 @@
 
 	function UpdateCalcResultsView() {
 		console.log(calcResult);
+
+		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
+		elements.forEach(function (item, index) {
+			//tElementsAmount += "<td>" + calcResult+ "</td>";
+			tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.elements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.elementsM[item].toFixed(4) + "</td>";
+			//<tr id="elementsAmountView"></tr>
+		});
+		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
+		var elementsAmountView = document.getElementById("elementsAmountView");
+		elementsAmountView.innerHTML = tElementsAmount;
+
+
+
 		var nitrogenRelativesView = document.getElementById("nitrogenRelativesView");
-		nitrogenRelativesView.innerHTML = (umolUnits == false) ? calcResult.nitrogenRelatives : calcResult.nitrogenRelativesM;
+		nitrogenRelativesView.innerHTML = (umolUnits == false) ? +calcResult.nitrogenRelatives.toFixed(2) : +calcResult.nitrogenRelativesM.toFixed(2);
 
 		var norma = 1;
 		var n = (umolUnits == false) ? calcResult.elements["N"] : calcResult.elementsM["N"];
 		var p = (umolUnits == false) ? calcResult.elements["P"] : calcResult.elementsM["P"];
 		var k = (umolUnits == false) ? calcResult.elements["K"] : calcResult.elementsM["K"];
 
-		//norma = (n > 0) ? n : norma;
-		//norma = (p > 0 && p < norma) ? p : norma;
-		//norma = (k > 0 && k < norma) ? k : norma;
-		norma = n;
+
+		var NPKRelativesView = document.getElementById("NPKRelativesView");
+		NPKRelativesView.innerHTML = +n.toFixed(2) + " : " + +p.toFixed(2) + " : " + +k.toFixed(2);
+
+		var NKRelativesView = document.getElementById("NKRelativesView");
+		NKRelativesView.innerHTML = +n.toFixed(2) + " : " + +k.toFixed(2);
+
+
+
+		ca = (umolUnits == false) ? calcResult.elements["Ca"] : calcResult.elementsM["Ca"];
+		mg = (umolUnits == false) ? calcResult.elements["Mg"] : calcResult.elementsM["Mg"];
+
+		var KCaMgRelativesView = document.getElementById("KCaMgRelativesView");
+		KCaMgRelativesView.innerHTML = +k.toFixed(2) + " : " + +ca.toFixed(2) + " : " + +mg.toFixed(2);
 
 		var npk = "";
 		var legend = "";
@@ -214,8 +256,24 @@
 
 		var elementsRelativesView = document.getElementById("elementsRelativesView");
 		elementsRelativesView.innerHTML = npk;
+
+		var elementsRelativesView = document.getElementById("elementsRelativesView");
+		elementsRelativesView.innerHTML = npk;
 		var elementsRelativesLegend = document.getElementById("elementsRelativesLegend");
 		elementsRelativesLegend.innerHTML = legend;
+
+
+
+		norma = (n > 0) ? n : norma;
+		norma = (p > 0 && p < norma) ? p : norma;
+		norma = (k > 0 && k < norma) ? k : norma;
+		norma = n;
+		n = n / norma;
+		p = p / norma;
+		k = k / norma;
+
+		var NormNPKRelativesView = document.getElementById("NormNPKRelativesView");
+		NormNPKRelativesView.innerHTML = +n.toFixed(2) + " : " + +p.toFixed(2) + " : " + +k.toFixed(2);
 
 	}
 
@@ -234,25 +292,64 @@
 
 	<table style="width:100%">
 		<thead>
-			<tr id=selectedFertilizersViewHead>
+			<tr id="selectedFertilizersViewHead">
 			</tr>
 		</thead>
 		<tbody id="selectedFertilizersView" onchange="selectedFertilizersControllerEvent()">
 		</tbody>
+		<tfoot id="elementsAmountView">
+
+		</tfoot>
+	</table>
+	<br>
+	<table style="width:40%">
+		<thead>
+			<tr>
+				<td>Элементы</td>
+				<td>Соотношение</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>N:P:K</td>
+				<td id="NPKRelativesView">0:0:0</td>
+			</tr>
+			<tr>
+				<td>N:P:K нормированное</td>
+				<td id="NormNPKRelativesView">0:0:0</td>
+			</tr>
+			<tr>
+				<td>K:Ca:Mg</td>
+				<td id="KCaMgRelativesView">0:0:0</td>
+			</tr>
+			<tr>
+				<td>N:K</td>
+				<td id="NKRelativesView">0:0</td>
+			</tr>
+			<tr>
+				<td>N(NH4+):N(NO3-)</td>
+				<td id="nitrogenRelativesView">0:0</td>
+			</tr>
+
+			<tr>
+				<td id="elementsRelativesLegend">Все элементы</td>
+				<td id="elementsRelativesView"></td>
+			</tr>
+
+
+		</tbody>
+
 	</table>
 
+
+
 	<form>
-		<input type=checkbox id="umolUnitsController" onchange="umolUnitsChanged()" checked="false">мкмоль/л вместо
+		<input type=checkbox id="umolUnitsController" onchange="umolUnitsChanged()" checked="false">ммоль/л вместо
 		мг/л<br>
-		<b>
-			<p id=elementsRelativesLegend>N:P:K</p>
-		</b>
-		<p id=elementsRelativesView>
-		</p>
-		<p><b>N(NO3+) : N(NH4-)</b></p>
-		<p id=nitrogenRelativesView>
-		</p>
-		<p><b>EC, мкСм/см:</b></p>
+
+
+
+		<p style="visibility: hidden;"><b>EC, мкСм/см:</b></p>
 		<p id=ecView>
 		</p>
 	</form>
