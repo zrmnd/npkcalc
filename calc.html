@@ -50,7 +50,17 @@
 		selectedFertilizersModel = [];
 		fertilizers.forEach(function (item, index) {
 			selectedFertilizersModel[index] = { selected: false, concentration: 0 };
+			if (fertilizers[index]["N"] == 0 || fertilizers[index]["N"] == null) {
+				fertilizers[index]["N"] = 0;
+				if (fertilizers[index]["N_NO3"] != null)
+					fertilizers[index]["N"] += fertilizers[index]["N_NO3"];
+				if (fertilizers[index]["N_NH4"] != null)
+					fertilizers[index]["N"] += fertilizers[index]["N_NH4"];
+			} else {
+				if (fertilizers[index]["N"] != fertilizers[index]["N_NO3"] + fertilizers[index]["N_NH4"]) alert("Fertilizer " + fertilizers[index][name] + " nitrogen error!")
+			}
 			fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + "<br>";
+
 		});
 		var thead = "<td>Удобрения</td><td>Концентрация, мг/л</td>";
 		elements.forEach(function (item, index) {
@@ -94,7 +104,9 @@
 					if (conc == null) {
 						conc = 0;
 					}
-					if (eitem == "N") {
+
+
+					/*if (eitem == "N" ) {
 						if (conc == 0) {
 							if (fertilizers[index]["N_NO3"] != null) {
 								conc += fertilizers[index]["N_NO3"];
@@ -107,7 +119,7 @@
 								selectedFertilizersModel[index].elementsM["N_NH4"] = fertilizers[index]["N_NH4"] * weight / 14;
 							}
 						}
-					}
+					}*/
 					var eWeight = conc * weight;
 					selectedFertilizersModel[index].elements[eitem] = eWeight;
 					selectedFertilizersModel[index].elementsM[eitem] = eWeight / atomic_weights[eitem];
@@ -183,7 +195,7 @@
 					calcResult.elements[eitem] += item.elements[eitem];
 					calcResult.elementsM[eitem] += item.elementsM[eitem];
 				});
-				if (calcResult.elements["N_NO3"] == null)
+				/*if (calcResult.elements["N_NO3"] == null)
 					calcResult.elements["N_NO3"] = 0;
 				if (calcResult.elements["N_NH4"] == null)
 					calcResult.elements["N_NH4"] = 0;
@@ -198,7 +210,7 @@
 				if (item.elements["N_NH4"] != null) {
 					calcResult.elements["N_NH4"] += item.elements["N_NH4"];
 					calcResult.elementsM["N_NH4"] += item.elementsM["N_NH4"];
-				}
+				}*/
 			}
 		});
 
@@ -267,7 +279,7 @@
 		norma = (n > 0) ? n : norma;
 		norma = (p > 0 && p < norma) ? p : norma;
 		norma = (k > 0 && k < norma) ? k : norma;
-		norma = n;
+		//norma = n;
 		n = n / norma;
 		p = p / norma;
 		k = k / norma;
@@ -327,7 +339,7 @@
 				<td id="NKRelativesView">0:0</td>
 			</tr>
 			<tr>
-				<td>N(NH4+):N(NO3-)</td>
+				<td>N(NO3-):N(NH4+-)</td>
 				<td id="nitrogenRelativesView">0:0</td>
 			</tr>
 
