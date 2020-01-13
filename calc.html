@@ -68,8 +68,6 @@
 		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
 		elements.forEach(function (item, index) {
 			tElementsAmount += "<td>" + "0" + "</td>";
-			//tElementsAmount += (umolUnits == false) ? "<td>" + "0" + ", мг/л</td>" : "<td>" + "0" + ", ммоль/л</td>";
-			//<tr id="elementsAmountView"></tr>
 		});
 		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
 		var elementsAmountView = document.getElementById("elementsAmountView");
@@ -121,7 +119,6 @@
 					elements.forEach(function (eitem) {
 						var val = (umolUnits == false) ? +item.elements[eitem].toFixed(4) : +item.elementsM[eitem].toFixed(4);
 						trow += "<td>" + val + "</td>";
-						// "<td>" + item + ", ммоль/л</td>";
 					});
 					row.innerHTML = trow;
 
@@ -190,79 +187,67 @@
 
 		calcResult.nitrogenRelatives = calcResult.elements["N_NO3"] / calcResult.elements["N_NH4"];
 		calcResult.nitrogenRelativesM = calcResult.elementsM["N_NO3"] / calcResult.elementsM["N_NH4"];
+
+		calcResult.nitrogenNH4PercentRelatives = calcResult.elements["N_NH4"] / calcResult.elements["N"];
+		calcResult.nitrogenNH4PercentRelativesM = calcResult.elementsM["N_NH4"] / calcResult.elementsM["N"];
+
+
+
 	}
 
 	function UpdateCalcResultsView() {
 		console.log(calcResult);
-
+		// вывод полного соотношения элементов
 		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
 		elements.forEach(function (item, index) {
-			//tElementsAmount += "<td>" + calcResult+ "</td>";
 			tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.elements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.elementsM[item].toFixed(4) + "</td>";
-			//<tr id="elementsAmountView"></tr>
 		});
 		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
 		var elementsAmountView = document.getElementById("elementsAmountView");
 		elementsAmountView.innerHTML = tElementsAmount;
 
 
-
 		var nitrogenRelativesView = document.getElementById("nitrogenRelativesView");
 		nitrogenRelativesView.innerHTML = (umolUnits == false) ? +calcResult.nitrogenRelatives.toFixed(2) : +calcResult.nitrogenRelativesM.toFixed(2);
+
+		var nh4percent = (umolUnits == false) ? +(100 * calcResult.elements["N_NH4"] / calcResult.elements["N"]).toFixed(1) : +(100 * calcResult.elementsM["N_NH4"] / calcResult.elementsM["N"]).toFixed(1)
+		var nitrogenNH4percentRelativesView = document.getElementById("nitrogenNH4percentRelativesView");
+		nitrogenNH4percentRelativesView.innerHTML = nh4percent;
 
 		var norma = 1;
 		var n = (umolUnits == false) ? calcResult.elements["N"] : calcResult.elementsM["N"];
 		var p = (umolUnits == false) ? calcResult.elements["P"] : calcResult.elementsM["P"];
 		var k = (umolUnits == false) ? calcResult.elements["K"] : calcResult.elementsM["K"];
-
-
+		norma = n;
+		if (k < norma) norma = k;
+		if (p < norma) norma = p;
+		var nNorm = n / norma;
+		var pNorm = p / norma;
+		var kNorm = k / norma;
 		var NPKRelativesView = document.getElementById("NPKRelativesView");
-		NPKRelativesView.innerHTML = +n.toFixed(2) + " : " + +p.toFixed(2) + " : " + +k.toFixed(2);
+		NPKRelativesView.innerHTML = +nNorm.toFixed(2) + " : " + +pNorm.toFixed(2) + " : " + +kNorm.toFixed(2);
 
+		norma = n;
+		if (k < norma) norma = k;
+		nNorm = n / norma;
+		kNorm = k / norma;
 		var NKRelativesView = document.getElementById("NKRelativesView");
-		NKRelativesView.innerHTML = +n.toFixed(2) + " : " + +k.toFixed(2);
+		NKRelativesView.innerHTML = +nNorm.toFixed(2) + " : " + +kNorm.toFixed(2);
 
-
-
-		ca = (umolUnits == false) ? calcResult.elements["Ca"] : calcResult.elementsM["Ca"];
-		mg = (umolUnits == false) ? calcResult.elements["Mg"] : calcResult.elementsM["Mg"];
+		var ca = (umolUnits == false) ? calcResult.elements["Ca"] : calcResult.elementsM["Ca"];
+		var mg = (umolUnits == false) ? calcResult.elements["Mg"] : calcResult.elementsM["Mg"];
+		norma = ca;
+		if (mg < norma) norma = mg;
+		if (k < norma) norma = k;
+		var caNorm = ca / norma;
+		var mgNorm = mg / norma;
+		kNorm = k / norma;
 
 		var KCaMgRelativesView = document.getElementById("KCaMgRelativesView");
-		KCaMgRelativesView.innerHTML = +k.toFixed(2) + " : " + +ca.toFixed(2) + " : " + +mg.toFixed(2);
+		KCaMgRelativesView.innerHTML = +kNorm.toFixed(2) + " : " + +caNorm.toFixed(2) + " : " + +mgNorm.toFixed(2);
 
-		var npk = "";
-		var legend = "";
-
-		elements.forEach(function (item) {
-			if (item != "N_NO3" && item != "N_NH4") {
-				npk += (umolUnits == false) ? +(calcResult.elements[item] / norma).toFixed(3) + " : " : +(calcResult.elementsM[item] / norma).toFixed(3) + " : ";
-				legend += item + " : ";
-			}
-		});
-
-		var elementsRelativesView = document.getElementById("elementsRelativesView");
-		elementsRelativesView.innerHTML = npk;
-
-		var elementsRelativesView = document.getElementById("elementsRelativesView");
-		elementsRelativesView.innerHTML = npk;
-		var elementsRelativesLegend = document.getElementById("elementsRelativesLegend");
-		elementsRelativesLegend.innerHTML = legend;
-
-
-
-		norma = (n > 0) ? n : norma;
-		norma = (p > 0 && p < norma) ? p : norma;
-		norma = (k > 0 && k < norma) ? k : norma;
-		//norma = n;
-		n = n / norma;
-		p = p / norma;
-		k = k / norma;
-
-		var NormNPKRelativesView = document.getElementById("NormNPKRelativesView");
-		NormNPKRelativesView.innerHTML = +n.toFixed(2) + " : " + +p.toFixed(2) + " : " + +k.toFixed(2);
 
 	}
-
 
 
 
@@ -297,30 +282,28 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td>N:P:K</td>
+				<td>N:P:K нормированное</td>
 				<td id="NPKRelativesView">0:0:0</td>
 			</tr>
 			<tr>
-				<td>N:P:K нормированное</td>
-				<td id="NormNPKRelativesView">0:0:0</td>
-			</tr>
-			<tr>
-				<td>K:Ca:Mg</td>
+				<td>K:Ca:Mg нормированное</td>
 				<td id="KCaMgRelativesView">0:0:0</td>
 			</tr>
 			<tr>
-				<td>N:K</td>
+				<td>N:K нормированное</td>
 				<td id="NKRelativesView">0:0</td>
 			</tr>
+
 			<tr>
 				<td>N(NO3-):N(NH4+-)</td>
 				<td id="nitrogenRelativesView">0:0</td>
 			</tr>
-
 			<tr>
-				<td id="elementsRelativesLegend">Все элементы</td>
-				<td id="elementsRelativesView"></td>
+				<td>N(NH4+):N(summ), %</td>
+				<td id="nitrogenNH4percentRelativesView">0:0</td>
 			</tr>
+
+
 
 
 		</tbody>
