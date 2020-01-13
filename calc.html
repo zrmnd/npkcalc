@@ -62,12 +62,8 @@
 			fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + "<br>";
 
 		});
-		var thead = "<td>Удобрения</td><td>Концентрация, мг/л</td>";
-		elements.forEach(function (item, index) {
-			thead += (umolUnits == false) ? "<td>" + item + ", мг/л</td>" : "<td>" + item + ", ммоль/л</td>";
-		});
-		var selectedFertilizersViewHead = document.getElementById("selectedFertilizersViewHead");
-		selectedFertilizersViewHead.innerHTML = thead;
+
+		tableHeadUpdate();
 
 		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
 		elements.forEach(function (item, index) {
@@ -104,22 +100,6 @@
 					if (conc == null) {
 						conc = 0;
 					}
-
-
-					/*if (eitem == "N" ) {
-						if (conc == 0) {
-							if (fertilizers[index]["N_NO3"] != null) {
-								conc += fertilizers[index]["N_NO3"];
-								selectedFertilizersModel[index].elements["N_NO3"] = fertilizers[index]["N_NO3"] * weight;
-								selectedFertilizersModel[index].elementsM["N_NO3"] = fertilizers[index]["N_NO3"] * weight / 14;
-							}
-							if (fertilizers[index]["N_NH4"] != null) {
-								conc += fertilizers[index]["N_NH4"];
-								selectedFertilizersModel[index].elements["N_NH4"] = fertilizers[index]["N_NH4"] * weight;
-								selectedFertilizersModel[index].elementsM["N_NH4"] = fertilizers[index]["N_NH4"] * weight / 14;
-							}
-						}
-					}*/
 					var eWeight = conc * weight;
 					selectedFertilizersModel[index].elements[eitem] = eWeight;
 					selectedFertilizersModel[index].elementsM[eitem] = eWeight / atomic_weights[eitem];
@@ -157,15 +137,25 @@
 		});
 	}
 
-	function umolUnitsChanged() {
-		var ch = document.getElementById("umolUnitsController");
-		umolUnits = ch.checked;
+	function tableHeadUpdate() {
 		var thead = "<td>Удобрения</td><td>Концентрация, мг/л</td>";
 		elements.forEach(function (item, index) {
-			thead += (umolUnits == false) ? "<td>" + item + ", мг/л</td>" : "<td>" + item + ", ммоль/л</td>";
+			var text = item;
+			if (ions[item] >= 1) {
+				text = "<font color='red'>" + text + "</font>";
+			} else if (ions[item] <= -1) {
+				text = "<font color='blue'>" + text + "</font>";
+			}
+			thead += (umolUnits == false) ? "<td>" + text + ", мг/л</td>" : "<td>" + text + ", ммоль/л</td>";
 		});
 		var selectedFertilizersViewHead = document.getElementById("selectedFertilizersViewHead");
 		selectedFertilizersViewHead.innerHTML = thead;
+	}
+
+	function umolUnitsChanged() {
+		var ch = document.getElementById("umolUnitsController");
+		umolUnits = ch.checked;
+		tableHeadUpdate();
 		selectedFertilizersModelUpdate();
 		selectedFertilizersViewUpdate();
 		calculate();
@@ -195,22 +185,6 @@
 					calcResult.elements[eitem] += item.elements[eitem];
 					calcResult.elementsM[eitem] += item.elementsM[eitem];
 				});
-				/*if (calcResult.elements["N_NO3"] == null)
-					calcResult.elements["N_NO3"] = 0;
-				if (calcResult.elements["N_NH4"] == null)
-					calcResult.elements["N_NH4"] = 0;
-				if (calcResult.elementsM["N_NO3"] == null)
-					calcResult.elementsM["N_NO3"] = 0;
-				if (calcResult.elementsM["N_NH4"] == null)
-					calcResult.elementsM["N_NH4"] = 0;
-				if (item.elements["N_NO3"] != null) {
-					calcResult.elements["N_NO3"] += item.elements["N_NO3"];
-					calcResult.elementsM["N_NO3"] += item.elementsM["N_NO3"];
-				}
-				if (item.elements["N_NH4"] != null) {
-					calcResult.elements["N_NH4"] += item.elements["N_NH4"];
-					calcResult.elementsM["N_NH4"] += item.elementsM["N_NH4"];
-				}*/
 			}
 		});
 
