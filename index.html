@@ -6,496 +6,844 @@
 
 </head>
 <style>
-	table,
-	thead,
-	tbody,
-	tfoot,
-	tr,
-	td,
-	th {
-
-
-		border: 1px solid black;
-		border-collapse: collapse;
-		padding: 10px;
-		text-align: left;
-
-	}
-
-	table {}
-
-	tr:hover {
-		background-color: #f5f5f5;
-	}
+    table,
+    thead,
+    tbody,
+    tfoot,
+    tr,
+    td,
+    th {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 10px;
+        text-align: left;
+    }
+    
+    table {}
+    
+    tr:hover {
+        background-color: #f5f5f5;
+    }
 </style>
 
 <script>
-	// writed by Egor Tryakshin, 2019 
-	// tg: @zeromind 
+    // writed by Egor Tryakshin, 2019 
+    // tg: @zeromind 
 
-	// K2O  -> K   = * 0.83015
-	// P2O5 -> P   = * 0.43642
-	// CaO  -> Ca  = * 0.71469
-	// MgO  -> Mg  = * 0.603
-
-
-	var elements = ["N_NO3", "N_NH4", "N", "P", "K", "Ca", "Mg", "S", "Fe", "B", "Zn", "Cu", "Mn", "Mo", "Cl"];
-	var fertilizers = [
-		{
-			name: "Акварин 1 (7:11:30 4 3)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 0, "N_NO3": 7, "P": 4.8, "K": 24.9045, "Mg": 2.412, "S": 3, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 3 (3:11:35, хвойный)", desc: "N: 3%, P2O5: 11%, K2O: 35%, MgO: 4%, S: 9%, Fe (ДТПА) – 0,054; Zn (ЭДТА) – 0,014; Cu (ЭДТА) – 0,01; Mn (ЭДТА) – 0,042; Mo – 0,004; B – 0,02 ",
-			"N_NH4": 0, "N_NO3": 3, "P": 4.8, "K": 29.06, "Mg": 2.412, "S": 9, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 4 (6:12:33, 3:7)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 1.5, "N_NO3": 4.5, "P": 5.23704, "K": 27.39495, "Mg": 1.809, "S": 7, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-
-		{
-			name: "Акварин 6 (15:5:30 1.7 1.3)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 3.7, "N_NO3": 11.3, "P": 2.1821, "K": 24.9045, "Mg": 1.0251, "S": 1.3, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 7 (13:5:25 2 8)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 6, "N_NO3": 7, "P": 2.1821, "K": 20.75375, "Mg": 1.206, "S": 8, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 8 (19:6:20 1.5 1.4)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 7.1, "N_NO3": 11.9, "P": 2.61852, "K": 16.603, "Mg": 0.9045, "S": 1.4, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 9 (20:8:8 1.5 9)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 13.2, "N_NO3": 6.8, "P": 3.49136, "K": 6.6412, "Mg": 0.9045, "S": 9, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 10 (20:5:10, земляничный)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 0, "N_NO3": 20, "P": 2.18, "K": 8.3, "Mg": 0.9, "S": 8.4, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 11 (18:18:18)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 8, "N_NO3": 10, "P": 7.85556, "K": 14.9427, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 12 (12:12:35 1 0.7)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 2, "N_NO3": 10, "P": 5.23704, "K": 29.05525, "Mg": 0.603, "S": 0.7, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 13 (13:41:13)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 8.6, "N_NO3": 4.4, "P": 17.89322, "K": 10.79195, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 25
-		},
-		{
-			name: "Акварин 14 (17:6:18 1.5 7)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 9, "N_NO3": 8, "P": 2.61852, "K": 14.9427, "Mg": 0.9045, "S": 7, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 15 (3:11:38 3 9)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 0, "N_NO3": 3, "P": 4.8, "K": 31.5457, "Mg": 1.809, "S": 9, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-		{
-			name: "Акварин 16 (6:12:36 2 4)", desc: "https://buyskie.ru/fertilizer/akvarin/",
-			"N_NH4": 0, "N_NO3": 6, "P": 5.23704, "K": 29.8854, "Mg": 1.206, "S": 4, "Fe": 0.054, "Zn": 0.014, "Cu": 0.01, "Mn": 0.042, "Mo": 0.004, "B": 0.02, "solublity25": 100
-		},
-
-		{
-			name: "KRISTALON 3-11-38 (Коричневый)", desc: "N: 3%, P2O5: 11%, K2O: 38%",
-			"N_NH4": 0, "N_NO3": 3, "P": 4.8, "K": 31.55, "Mg": 2.412, "S": 11, "Fe": 0.07, "Zn": 0.025, "Cu": 0.01, "Mn": 0.04, "Mo": 0.004, "B": 0.025, "solublity25": 100
-		},
-		{
-			name: "KRISTALON 7,5-12-36 (SCARLET)", desc: "https://www.agrovista.ru/magazin/product/kristalon-skarlet-7-5-12-36-4-5mg",
-			"N_NH4": 0, "N_NO3": 7.5, "P": 5.24, "K": 29.89, "Mg": 2.8, "S": 4, "Fe": 0.15, "Zn": 0.027, "Cu": 0.04, "Mn": 0.06, "Mo": 0.004, "B": 0.027, "solublity25": 100
-		},
-		{
-			name: "KRISTALON 13-40-13 (желтый)", desc: "https://www.agrovista.ru/magazin/product/kristalon-zheltyy-13-40-13",
-			"N_NH4": 8.6, "N_NO3": 4.4, "P": 17.4568, "K": 10.79195, "Fe": 0.07, "Zn": 0.025, "Cu": 0.04, "Mn": 0.04, "Mo": 0.004, "B": 0.025, "solublity25": 100
-		},
-		{
-			name: "KRISTALON  15-5-30+3MgO (белый)", desc: "https://www.agrovista.ru/magazin/product/kristalon-belyy-15-5-30-3mg",
-			"N_NH4": 3.7, "N_NO3": 11.3, "P": 2.1821, "K": 24.9045, "Mg": 1.809, "S": 2, "Fe": 0.07, "Zn": 0.025, "Cu": 0.01, "Mn": 0.04, "Mo": 0.004, "B": 0.025, "solublity25": 100
-		},
-		{
-			name: "KRISTALON  19-6-20+3MgO (голубой)", desc: "https://www.yara.ru/crop-nutrition/products/yaratera/yaratera-kristalon-19-6-20-blue-label/",
-			"N_NH4": 7.1, "N_NO3": 11.9, "P": 2.61852, "K": 16.603, "Mg": 1.809, "S": 3, "Fe": 0.07, "Zn": 0.025, "Cu": 0.01, "Mn": 0.04, "Mo": 0.004, "B": 0.025, "solublity25": 100
-		},
-		{ name: "Кальций азотнокислый (буйский марка А)", "Ca": 19.3, "N_NO3": 14.9, "N_NH4": 0.7 },
-		{ name: "Кальций азотнокислый (Ч, безводный)", "Ca": 24.18, "N_NO3": 16.89 },
-		{ name: "Кальций азотнокислый (Yara CALCINIT)", "Ca": 19, "N_NO3": 14.4, "N_NH4": 1.1 },
-		{ name: "Кальций азотнокислый (Solar)", desc: "https://solar.uralchem.com/ru/catalog/nitrat_kaltsiya_kontsentrirovannyy/", "Ca": 23.585, "N_NO3": 16.7, "N_NH4": 0.3 },
-		{ name: "Кальций хлористый (CaCl2 безводный), Ч", desc: "https://pcgroup.ru/products/hloristyj-kaltsij-granulirovannyj-bezvodnyj/", "Ca": 36.1115, "Cl": 63.8885, "solublity25": 100 },
-		{ name: "Калий азотнокислый (KNO3), Ч", "K": 38.672, "N_NO3": 13.854, "solublity25": 36 },
-		{ name: "Калий азотнокислый (KNO3), буйский", desc: "https://bhz.ru/catalog/standart-min/nitrat-kaliya-selitra-kalievaya/", "K": 38.1869, "N_NO3": 13.6, "solublity25": 36 },
-		{ name: "Калий фосфорнокислый 1-замещенный (монофосфат, KH2PO4), Ч", "K": 28.731, "P": 22.761 },
-		{ name: "Калий фосфорнокислый 1-замещенный (монофосфат, KH2PO4), буйский 0-50-33", "K": 27.395, "P": 21.821 },
-
-		{ name: "Калиий сернокислый (Solupotasse, K2SO4)", "K": 42.2545218, "S": 18 },
-		{ name: "Магний сернокислый семиводный (MgSO4*7H2O), Ч", "Mg": 9.861, "S": 13.01, "solublity25": 70 },
-		{ name: "Магний сернокислый семиводный (MgSO4*7H2O), буйский", desc: "https://bhz.ru/catalog/standart-min/sulfat-magniya-marka-b/", "Mg": 10.07, "S": 13.5, "solublity25": 70 },
-		{ name: "Магний азотнокислый шестиводный (Mg(NO3)2*6H2O), Ч/Yara", "Mg": 9.49, "N_NO3": 10.925, "solublity25": 70 },
-		{ name: "Магний хлористый шестиводный (MgCl2*6H2O), Ч", desc: "", "Mg": 11.83, "Cl": 34.53, "solublity25": 100 },
-
-		{ name: "Аммоний азотнокислый (NH4NO3), Ч", "N_NO3": 17.499, "N_NH4": 17.499, "solublity25": 70 },
-		{ name: "Аммоний сернокислый ((NH4)2SO4, буйский)", "N_NH4": 21, "S": 24 },
-		/*{
-			"name": "ADOB® Универсал Микро Комплекс", desc: "Железо (Fe) – 4% хелат EDTA, Марганец (Mn) – 3% хелат EDTA, Цинк (Zn) – 3% хелат EDTA, Медь (Cu) – 2% хелат EDTA, Бор (B) – 0.6%, Молибден (Mo) – 0.1%",
-			"Fe": 4, "Zn": 3, "Cu": 2, "Mn": 3, "Mo": 0.1, "B": 0.6, "solublity25": 100
-		},*/
-		{
-			"name": "ADOB® Гидропоник Микро Комплекс", desc: "https://pr-agro.ru/catalog/adob-gidroponik-mikro-kompleks/",
-			"Fe": 6, "Zn": 1.7, "Cu": 0.25, "Mn": 2.8, "Mo": 0.25, "B": 1.6, "solublity25": 100
-		},
-		{
-			"name": "Рексолин APN (Yara)", desc: "",
-			"Fe": 6, "Zn": 1.3, "Cu": 0.25, "Mn": 2.4, "Mo": 0.25, "B": 0.85, "solublity25": 100
-		},
-		{
-			name: "Аквамикс СТ", desc: "https://www.bhz.ru/catalog/mikroelementy/akvamiks-st/",
-			"Fe": 1.74, "Zn": 0.53, "Cu": 0.53, "Mn": 2.57, "Mo": 0.13, "B": 0.52, "Ca": 2.57, "Mo": 0.13
-		},
-		{ "name": "Калий гидроксид, ч", desc: "", "K": 69.687, "solublity25": 100 },
-		{ "name": "Кислота ортофосфорная, ч (100%, 1.88г/мл)", desc: "", "P": 31.607, "solublity25": 100 },
-		{ "name": "Кислота азотная, конц (68%, 1.4г/мл)", desc: "", "N_NO3": 15.11, "solublity25": 100 },
-		{ "name": "Кислота серная, электролит (37%, 1.27..1.28г/мл)", desc: "", "S": 12.08, "solublity25": 100 },
-		{ "name": "Кислота борная, ч (H3BO3)", desc: "", "B": 17.484, "solublity25": 100 },
-		//{ name: "GHE Flora Nova Grow", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 0.9, "N_NO3": 6.1, "P": 1.748, "K": 8.3, "Ca": 2.86, "Mg": 0.904, "Fe": 0.1, "S": 2 },
-		//{ name: "GHE Flora Nova Bloom", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 0.5, "N_NO3": 3.75, "P": 3.492, "K": 6.64, "Ca": 2.86, "Mg": 1.206, "Fe": 0.012, "S": 2 },
-		//{ name: "GHE Flora Bloom", desc: "*производитель не гарантирует точность состава на этикетке", "P": 2.185, "K": 3.32, "Mg": 3, "S": 2 },
-		//{ name: "GHE Flora Micro hardwater", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1.5, "N_NO3": 3.5, "K": 1.08, "B": 0.01, "Ca": 1, "Cu": 0.01, "Fe": 0.0204, "Mn": 0.04, "Mo": 0.004, "Zn": 0.015 },
-		//{ name: "GHE Flora Micro softwater", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1.5, "N_NO3": 3.5, "K": 1.08, "B": 0.01, "Ca": 5, "Cu": 0.01, "Fe": 0.0204, "Mn": 0.04, "Mo": 0.004, "Zn": 0.015 },
-		//{ name: "GHE Flora Gro", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1, "N_NO3": 2, "P": 0.437, "K": 4.98, "Mg": 0.8 },
+    // K2O  -> K   = * 0.83015
+    // P2O5 -> P   = * 0.43642
+    // CaO  -> Ca  = * 0.71469
+    // MgO  -> Mg  = * 0.603
 
 
-	];
+    var elements = ["N_NO3", "N_NH4", "N", "P", "K", "Ca", "Mg", "S", "Fe", "B", "Zn", "Cu", "Mn", "Mo", "Cl"];
+    var fertilizers = [{
+            name: "Акварин 1 (7:11:30 4 3)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 0,
+            "N_NO3": 7,
+            "P": 4.8,
+            "K": 24.9045,
+            "Mg": 2.412,
+            "S": 3,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 3 (3:11:35, хвойный)",
+            desc: "N: 3%, P2O5: 11%, K2O: 35%, MgO: 4%, S: 9%, Fe (ДТПА) – 0,054; Zn (ЭДТА) – 0,014; Cu (ЭДТА) – 0,01; Mn (ЭДТА) – 0,042; Mo – 0,004; B – 0,02 ",
+            "N_NH4": 0,
+            "N_NO3": 3,
+            "P": 4.8,
+            "K": 29.06,
+            "Mg": 2.412,
+            "S": 9,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 4 (6:12:33, 3:7)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 1.5,
+            "N_NO3": 4.5,
+            "P": 5.23704,
+            "K": 27.39495,
+            "Mg": 1.809,
+            "S": 7,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        },
+
+        {
+            name: "Акварин 6 (15:5:30 1.7 1.3)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 3.7,
+            "N_NO3": 11.3,
+            "P": 2.1821,
+            "K": 24.9045,
+            "Mg": 1.0251,
+            "S": 1.3,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 7 (13:5:25 2 8)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 6,
+            "N_NO3": 7,
+            "P": 2.1821,
+            "K": 20.75375,
+            "Mg": 1.206,
+            "S": 8,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 8 (19:6:20 1.5 1.4)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 7.1,
+            "N_NO3": 11.9,
+            "P": 2.61852,
+            "K": 16.603,
+            "Mg": 0.9045,
+            "S": 1.4,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 9 (20:8:8 1.5 9)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 13.2,
+            "N_NO3": 6.8,
+            "P": 3.49136,
+            "K": 6.6412,
+            "Mg": 0.9045,
+            "S": 9,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 10 (20:5:10, земляничный)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 0,
+            "N_NO3": 20,
+            "P": 2.18,
+            "K": 8.3,
+            "Mg": 0.9,
+            "S": 8.4,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 11 (18:18:18)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 8,
+            "N_NO3": 10,
+            "P": 7.85556,
+            "K": 14.9427,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 12 (12:12:35 1 0.7)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 2,
+            "N_NO3": 10,
+            "P": 5.23704,
+            "K": 29.05525,
+            "Mg": 0.603,
+            "S": 0.7,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 13 (13:41:13)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 8.6,
+            "N_NO3": 4.4,
+            "P": 17.89322,
+            "K": 10.79195,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 25
+        }, {
+            name: "Акварин 14 (17:6:18 1.5 7)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 9,
+            "N_NO3": 8,
+            "P": 2.61852,
+            "K": 14.9427,
+            "Mg": 0.9045,
+            "S": 7,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 15 (3:11:38 3 9)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 0,
+            "N_NO3": 3,
+            "P": 4.8,
+            "K": 31.5457,
+            "Mg": 1.809,
+            "S": 9,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        }, {
+            name: "Акварин 16 (6:12:36 2 4)",
+            desc: "https://buyskie.ru/fertilizer/akvarin/",
+            "N_NH4": 0,
+            "N_NO3": 6,
+            "P": 5.23704,
+            "K": 29.8854,
+            "Mg": 1.206,
+            "S": 4,
+            "Fe": 0.054,
+            "Zn": 0.014,
+            "Cu": 0.01,
+            "Mn": 0.042,
+            "Mo": 0.004,
+            "B": 0.02,
+            "solublity25": 100
+        },
+
+        {
+            name: "KRISTALON 3-11-38 (Коричневый)",
+            desc: "N: 3%, P2O5: 11%, K2O: 38%",
+            "N_NH4": 0,
+            "N_NO3": 3,
+            "P": 4.8,
+            "K": 31.55,
+            "Mg": 2.412,
+            "S": 11,
+            "Fe": 0.07,
+            "Zn": 0.025,
+            "Cu": 0.01,
+            "Mn": 0.04,
+            "Mo": 0.004,
+            "B": 0.025,
+            "solublity25": 100
+        }, {
+            name: "KRISTALON 7,5-12-36 (SCARLET)",
+            desc: "https://www.agrovista.ru/magazin/product/kristalon-skarlet-7-5-12-36-4-5mg",
+            "N_NH4": 0,
+            "N_NO3": 7.5,
+            "P": 5.24,
+            "K": 29.89,
+            "Mg": 2.8,
+            "S": 4,
+            "Fe": 0.15,
+            "Zn": 0.027,
+            "Cu": 0.04,
+            "Mn": 0.06,
+            "Mo": 0.004,
+            "B": 0.027,
+            "solublity25": 100
+        }, {
+            name: "KRISTALON 13-40-13 (желтый)",
+            desc: "https://www.agrovista.ru/magazin/product/kristalon-zheltyy-13-40-13",
+            "N_NH4": 8.6,
+            "N_NO3": 4.4,
+            "P": 17.4568,
+            "K": 10.79195,
+            "Fe": 0.07,
+            "Zn": 0.025,
+            "Cu": 0.04,
+            "Mn": 0.04,
+            "Mo": 0.004,
+            "B": 0.025,
+            "solublity25": 100
+        }, {
+            name: "KRISTALON  15-5-30+3MgO (белый)",
+            desc: "https://www.agrovista.ru/magazin/product/kristalon-belyy-15-5-30-3mg",
+            "N_NH4": 3.7,
+            "N_NO3": 11.3,
+            "P": 2.1821,
+            "K": 24.9045,
+            "Mg": 1.809,
+            "S": 2,
+            "Fe": 0.07,
+            "Zn": 0.025,
+            "Cu": 0.01,
+            "Mn": 0.04,
+            "Mo": 0.004,
+            "B": 0.025,
+            "solublity25": 100
+        }, {
+            name: "KRISTALON  19-6-20+3MgO (голубой)",
+            desc: "https://www.yara.ru/crop-nutrition/products/yaratera/yaratera-kristalon-19-6-20-blue-label/",
+            "N_NH4": 7.1,
+            "N_NO3": 11.9,
+            "P": 2.61852,
+            "K": 16.603,
+            "Mg": 1.809,
+            "S": 3,
+            "Fe": 0.07,
+            "Zn": 0.025,
+            "Cu": 0.01,
+            "Mn": 0.04,
+            "Mo": 0.004,
+            "B": 0.025,
+            "solublity25": 100
+        }, {
+            name: "Кальций азотнокислый (буйский марка А)",
+            "Ca": 19.3,
+            "N_NO3": 14.9,
+            "N_NH4": 0.7
+        }, {
+            name: "Кальций азотнокислый (Ч, безводный)",
+            "Ca": 24.18,
+            "N_NO3": 16.89
+        }, {
+            name: "Кальций азотнокислый (Yara CALCINIT)",
+            "Ca": 19,
+            "N_NO3": 14.4,
+            "N_NH4": 1.1
+        }, {
+            name: "Кальций азотнокислый (Solar)",
+            desc: "https://solar.uralchem.com/ru/catalog/nitrat_kaltsiya_kontsentrirovannyy/",
+            "Ca": 23.585,
+            "N_NO3": 16.7,
+            "N_NH4": 0.3
+        }, {
+            name: "Кальций хлористый (CaCl2 безводный), Ч",
+            desc: "https://pcgroup.ru/products/hloristyj-kaltsij-granulirovannyj-bezvodnyj/",
+            "Ca": 36.1115,
+            "Cl": 63.8885,
+            "solublity25": 100
+        }, {
+            name: "Калий азотнокислый (KNO3), Ч",
+            "K": 38.672,
+            "N_NO3": 13.854,
+            "solublity25": 36
+        }, {
+            name: "Калий азотнокислый (KNO3), буйский",
+            desc: "https://bhz.ru/catalog/standart-min/nitrat-kaliya-selitra-kalievaya/",
+            "K": 38.1869,
+            "N_NO3": 13.6,
+            "solublity25": 36
+        }, {
+            name: "Калий фосфорнокислый 1-замещенный (монофосфат, KH2PO4), Ч",
+            "K": 28.731,
+            "P": 22.761
+        }, {
+            name: "Калий фосфорнокислый 1-замещенный (монофосфат, KH2PO4), буйский 0-50-33",
+            "K": 27.395,
+            "P": 21.821
+        },
+
+        {
+            name: "Калиий сернокислый (Solupotasse, K2SO4)",
+            "K": 42.2545218,
+            "S": 18
+        }, {
+            name: "Магний сернокислый семиводный (MgSO4*7H2O), Ч",
+            "Mg": 9.861,
+            "S": 13.01,
+            "solublity25": 70
+        }, {
+            name: "Магний сернокислый семиводный (MgSO4*7H2O), буйский",
+            desc: "https://bhz.ru/catalog/standart-min/sulfat-magniya-marka-b/",
+            "Mg": 10.07,
+            "S": 13.5,
+            "solublity25": 70
+        }, {
+            name: "Магний азотнокислый шестиводный (Mg(NO3)2*6H2O), Ч/Yara",
+            "Mg": 9.49,
+            "N_NO3": 10.925,
+            "solublity25": 70
+        }, {
+            name: "Магний хлористый шестиводный (MgCl2*6H2O), Ч",
+            desc: "",
+            "Mg": 11.83,
+            "Cl": 34.53,
+            "solublity25": 100
+        },
+
+        {
+            name: "Аммоний азотнокислый (NH4NO3), Ч",
+            "N_NO3": 17.499,
+            "N_NH4": 17.499,
+            "solublity25": 70
+        }, {
+            name: "Аммоний сернокислый ((NH4)2SO4, буйский)",
+            "N_NH4": 21,
+            "S": 24
+        },
+        /*{
+        	"name": "ADOB® Универсал Микро Комплекс", desc: "Железо (Fe) – 4% хелат EDTA, Марганец (Mn) – 3% хелат EDTA, Цинк (Zn) – 3% хелат EDTA, Медь (Cu) – 2% хелат EDTA, Бор (B) – 0.6%, Молибден (Mo) – 0.1%",
+        	"Fe": 4, "Zn": 3, "Cu": 2, "Mn": 3, "Mo": 0.1, "B": 0.6, "solublity25": 100
+        },*/
+        {
+            "name": "ADOB® Гидропоник Микро Комплекс",
+            desc: "https://pr-agro.ru/catalog/adob-gidroponik-mikro-kompleks/",
+            "Fe": 6,
+            "Zn": 1.7,
+            "Cu": 0.25,
+            "Mn": 2.8,
+            "Mo": 0.25,
+            "B": 1.6,
+            "solublity25": 100
+        }, {
+            "name": "Рексолин APN (Yara)",
+            desc: "",
+            "Fe": 6,
+            "Zn": 1.3,
+            "Cu": 0.25,
+            "Mn": 2.4,
+            "Mo": 0.25,
+            "B": 0.85,
+            "solublity25": 100
+        }, {
+            name: "Аквамикс СТ",
+            desc: "https://www.bhz.ru/catalog/mikroelementy/akvamiks-st/",
+            "Fe": 1.74,
+            "Zn": 0.53,
+            "Cu": 0.53,
+            "Mn": 2.57,
+            "Mo": 0.13,
+            "B": 0.52,
+            "Ca": 2.57,
+            "Mo": 0.13
+        }, {
+            "name": "Калий гидроксид, ч",
+            desc: "",
+            "K": 69.687,
+            "solublity25": 100
+        }, {
+            "name": "Кислота ортофосфорная, ч (100%, 1.88г/мл)",
+            desc: "",
+            "P": 31.607,
+            "solublity25": 100
+        }, {
+            "name": "Кислота азотная, конц (68%, 1.4г/мл)",
+            desc: "",
+            "N_NO3": 15.11,
+            "solublity25": 100
+        }, {
+            "name": "Кислота серная, электролит (37%, 1.27..1.28г/мл)",
+            desc: "",
+            "S": 12.08,
+            "solublity25": 100
+        }, {
+            "name": "Кислота борная, ч (H3BO3)",
+            desc: "",
+            "B": 17.484,
+            "solublity25": 100
+        },
+        //{ name: "GHE Flora Nova Grow", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 0.9, "N_NO3": 6.1, "P": 1.748, "K": 8.3, "Ca": 2.86, "Mg": 0.904, "Fe": 0.1, "S": 2 },
+        //{ name: "GHE Flora Nova Bloom", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 0.5, "N_NO3": 3.75, "P": 3.492, "K": 6.64, "Ca": 2.86, "Mg": 1.206, "Fe": 0.012, "S": 2 },
+        //{ name: "GHE Flora Bloom", desc: "*производитель не гарантирует точность состава на этикетке", "P": 2.185, "K": 3.32, "Mg": 3, "S": 2 },
+        //{ name: "GHE Flora Micro hardwater", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1.5, "N_NO3": 3.5, "K": 1.08, "B": 0.01, "Ca": 1, "Cu": 0.01, "Fe": 0.0204, "Mn": 0.04, "Mo": 0.004, "Zn": 0.015 },
+        //{ name: "GHE Flora Micro softwater", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1.5, "N_NO3": 3.5, "K": 1.08, "B": 0.01, "Ca": 5, "Cu": 0.01, "Fe": 0.0204, "Mn": 0.04, "Mo": 0.004, "Zn": 0.015 },
+        //{ name: "GHE Flora Gro", desc: "*производитель не гарантирует точность состава на этикетке", "N_NH4": 1, "N_NO3": 2, "P": 0.437, "K": 4.98, "Mg": 0.8 },
 
 
-	var atomic_weights = { "H": 1, "K": 39.1, "N": 14, "N_NO3": 14, "N_NH4": 14, "O": 16, "Ca": 40.078, "Fe": 56, "P": 30.974, "Mg": 24.305, "S": 32, "Zn": 65.39, "Mo": 95.94, "Cu": 3.546, "B": 10.811, "Mn": 54.938, "Cl": 35.453 };
-	// заменить на элементс, добавить валентность к каждому элементу
-
-	var ions = { "S": -2, "P": -3, "SO3": -2, "N_NO3": -1, "N_NH4": 1, "K": 1, "Mg": 2, "Ca": 2, "Cl": -1 };
-	// "Mn": 2, "Cu": 2, "Zn": 2,
+    ];
 
 
+    var atomic_weights = {
+        "H": 1,
+        "K": 39.1,
+        "N": 14,
+        "N_NO3": 14,
+        "N_NH4": 14,
+        "O": 16,
+        "Ca": 40.078,
+        "Fe": 56,
+        "P": 30.974,
+        "Mg": 24.305,
+        "S": 32,
+        "Zn": 65.39,
+        "Mo": 95.94,
+        "Cu": 3.546,
+        "B": 10.811,
+        "Mn": 54.938,
+        "Cl": 35.453
+    };
+    // заменить на элементс, добавить валентность к каждому элементу
 
-
-	// акварин - 10г, КС - 10г, СМ - 3г 
-
-
-	var selectedFertilizersModel = [];
-	var umolUnits = false;
-	var calcResult = { elements: [], elementsM: [], nitrogenRelatives: 0, nitrogenRelativesM: 0, ec: 0, ph: 0 };
-
-
-	function init() {
-		document.getElementById("umolUnitsController").checked = false;
-		var fertilizersView = document.getElementById("fertilizersView");
-		fertilizersView.innerHTML = "";
-		selectedFertilizersModel = [];
-		fertilizers.forEach(function (item, index) {
-			selectedFertilizersModel[index] = { selected: false, concentration: 0 };
-			if (fertilizers[index]["N"] == 0 || fertilizers[index]["N"] == null) {
-				fertilizers[index]["N"] = 0;
-				if (fertilizers[index]["N_NO3"] != null)
-					fertilizers[index]["N"] += fertilizers[index]["N_NO3"];
-				if (fertilizers[index]["N_NH4"] != null)
-					fertilizers[index]["N"] += fertilizers[index]["N_NH4"];
-			} else {
-				if (fertilizers[index]["N"] != fertilizers[index]["N_NO3"] + fertilizers[index]["N_NH4"]) alert("Fertilizer " + fertilizers[index][name] + " nitrogen error!")
-			}
-
-			//fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + "<br>";
-
-			if (item["desc"] == undefined) item["desc"] = "";
-			if (item["name"] != null) { hrf = "<small><i> " + item["desc"] + " </i></small> " }
-			else { hrf = "X" };
-			fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + hrf + " <br>";
-
-
-
-		});
-
-		tableHeadUpdate();
-
-		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
-		elements.forEach(function (item, index) {
-			tElementsAmount += "<td>" + "0" + "</td>";
-		});
-		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
-		var elementsAmountView = document.getElementById("elementsAmountView");
-		elementsAmountView.innerHTML = tElementsAmount;
-	}
-
-	function selectedFertilizersModelUpdate() {
-		fertilizers.forEach(function (item, index) {
-			var ch = document.getElementById("fertilizersView[" + index + "]");
-			selectedFertilizersModel[index].selected = ch.checked;
-			var concentrationInput = document.getElementById(`concentrationInput${index}`);
-			if (document.getElementById(`concentrationInput${index}`) != null) {
-				selectedFertilizersModel[index].concentration = parseFloat(concentrationInput.value); //CalcMolarWeight
-			}
-			else {
-				selectedFertilizersModel[index].concentration = 0;
-			}
-		});
-
-
-		selectedFertilizersModel.forEach(function (item, index) {
-			selectedFertilizersModel[index].elements = [];
-			selectedFertilizersModel[index].elementsM = [];
-			if (item.selected == true) {
-				var weight = item.concentration;
-				elements.forEach(function (eitem) {
-					var conc = fertilizers[index][eitem];
-					if (conc == null) {
-						conc = 0;
-					}
-					var eWeight = conc / 100.0 * weight;
-					selectedFertilizersModel[index].elements[eitem] = eWeight;
-					selectedFertilizersModel[index].elementsM[eitem] = eWeight / atomic_weights[eitem];
-				});
-
-			}
-		});
-	}
-
-	function selectedFertilizersViewUpdate() {
-		selectedFertilizersModel.forEach(function (item, index) {
-			var row = document.getElementById("selectedFertilizersViewItem" + index);
-			if (item.selected == false && row != null) {
-				row.hidden = true;
-			} else if (item.selected == true) {
-				if (row != null) {
-					row.hidden = false;
-					var trow = `<td>${fertilizers[index].name}</td><td><input type='edit' id='concentrationInput${index}' value='${item.concentration}'></td>`;
-					elements.forEach(function (eitem) {
-						var val = (umolUnits == false) ? +item.elements[eitem].toFixed(4) : +item.elementsM[eitem].toFixed(4);
-						trow += "<td>" + val + "</td>";
-					});
-					row.innerHTML = trow;
-
-				} else {
-					var selectedFertilizersView = document.getElementById("selectedFertilizersView");
-					var trow = `<td>${fertilizers[index].name}</td><td><input type='edit' id='concentrationInput${index}' value='0'></td>`;
-					elements.forEach(function (eitem) {
-						trow += "<td>" + 0 + "</td>";
-					});
-					selectedFertilizersView.innerHTML += `<tr id="selectedFertilizersViewItem${index}">${trow}</tr>`;
-				}
-			}
-		});
-	}
-
-	function tableHeadUpdate() {
-		var thead = "<td>Удобрения</td><td>Концентрация, мг/л</td>";
-		elements.forEach(function (item, index) {
-			var text = item;
-			if (ions[item] >= 1) {
-				text = "<font color='red'>" + text + "</font>";
-			} else if (ions[item] <= -1) {
-				text = "<font color='blue'>" + text + "</font>";
-			}
-			thead += (umolUnits == false) ? "<td>" + text + ", мг/л</td>" : "<td>" + text + ", ммоль/л</td>";
-		});
-		var selectedFertilizersViewHead = document.getElementById("selectedFertilizersViewHead");
-		selectedFertilizersViewHead.innerHTML = thead;
-	}
-
-	function umolUnitsChanged() {
-		var ch = document.getElementById("umolUnitsController");
-		umolUnits = ch.checked;
-		tableHeadUpdate();
-		selectedFertilizersModelUpdate();
-		selectedFertilizersViewUpdate();
-		calculate();
-		UpdateCalcResultsView();
-	}
-
-
-	function selectedFertilizersControllerEvent() {
-		selectedFertilizersModelUpdate();
-		selectedFertilizersViewUpdate();
-		calculate();
-		UpdateCalcResultsView();
-	}
-
-	function calculate() {
-		calcResult.elements = [];
-		calcResult.elementsM = [];
-
-
-		selectedFertilizersModel.forEach(function (item, index) {
-			if (item.selected == true) {
-				elements.forEach(function (eitem) {
-					if (calcResult.elements[eitem] == null)
-						calcResult.elements[eitem] = 0;
-					if (calcResult.elementsM[eitem] == null)
-						calcResult.elementsM[eitem] = 0;
-					calcResult.elements[eitem] += item.elements[eitem];
-					calcResult.elementsM[eitem] += item.elementsM[eitem];
-				});
-			}
-		});
-
-		calcResult.nitrogenRelatives = calcResult.elements["N_NO3"] / calcResult.elements["N_NH4"];
-		calcResult.nitrogenRelativesM = calcResult.elementsM["N_NO3"] / calcResult.elementsM["N_NH4"];
-
-		calcResult.nitrogenNH4PercentRelatives = calcResult.elements["N_NH4"] / calcResult.elements["N"];
-		calcResult.nitrogenNH4PercentRelativesM = calcResult.elementsM["N_NH4"] / calcResult.elementsM["N"];
-
-
-
-	}
-
-	function UpdateCalcResultsView() {
-		console.log(calcResult);
-		// вывод полного соотношения элементов
-		var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
-		elements.forEach(function (item, index) {
-			tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.elements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.elementsM[item].toFixed(4) + "</td>";
-		});
-		tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
-		var elementsAmountView = document.getElementById("elementsAmountView");
-		elementsAmountView.innerHTML = tElementsAmount;
-
-
-		var nitrogenRelativesView = document.getElementById("nitrogenRelativesView");
-		nitrogenRelativesView.innerHTML = (umolUnits == false) ? +calcResult.nitrogenRelatives.toFixed(2) : +calcResult.nitrogenRelativesM.toFixed(2);
-
-		var nh4percent = (umolUnits == false) ? +(100 * calcResult.elements["N_NH4"] / calcResult.elements["N"]).toFixed(1) : +(100 * calcResult.elementsM["N_NH4"] / calcResult.elementsM["N"]).toFixed(1)
-		var nitrogenNH4percentRelativesView = document.getElementById("nitrogenNH4percentRelativesView");
-		nitrogenNH4percentRelativesView.innerHTML = nh4percent;
-
-		var norma = 1;
-		var n = (umolUnits == false) ? calcResult.elements["N"] : calcResult.elementsM["N"];
-		var p = (umolUnits == false) ? calcResult.elements["P"] : calcResult.elementsM["P"];
-		var k = (umolUnits == false) ? calcResult.elements["K"] : calcResult.elementsM["K"];
-		norma = n;
-		if (k < norma) norma = k;
-		if (p < norma) norma = p;
-		var nNorm = n / norma;
-		var pNorm = p / norma;
-		var kNorm = k / norma;
-		var NPKRelativesView = document.getElementById("NPKRelativesView");
-		NPKRelativesView.innerHTML = +nNorm.toFixed(2) + " : " + +pNorm.toFixed(2) + " : " + +kNorm.toFixed(2);
-
-		norma = n;
-		if (k < norma) norma = k;
-		nNorm = n / norma;
-		kNorm = k / norma;
-		var NKRelativesView = document.getElementById("NKRelativesView");
-		NKRelativesView.innerHTML = +nNorm.toFixed(2) + " : " + +kNorm.toFixed(2);
-
-		var ca = (umolUnits == false) ? calcResult.elements["Ca"] : calcResult.elementsM["Ca"];
-		var mg = (umolUnits == false) ? calcResult.elements["Mg"] : calcResult.elementsM["Mg"];
-		norma = ca;
-		if (mg < norma) norma = mg;
-		if (k < norma) norma = k;
-		var caNorm = ca / norma;
-		var mgNorm = mg / norma;
-		kNorm = k / norma;
-
-		var KCaMgRelativesView = document.getElementById("KCaMgRelativesView");
-		KCaMgRelativesView.innerHTML = +kNorm.toFixed(2) + " : " + +caNorm.toFixed(2) + " : " + +mgNorm.toFixed(2);
-
-
-		if (calcResult.elements["N_NH4"] == null) calcResult.elements["N_NH4"] = 0;
-		if (calcResult.elements["Ca"] == null) calcResult.elements["Ca"] = 0;
-		if (calcResult.elements["Mg"] == null) calcResult.elements["Mg"] = 0;
-		if (calcResult.elements["K"] == null) calcResult.elements["K"] = 0;
-		if (calcResult.elements["Na"] == null) calcResult.elements["Na"] = 0;
-		var ec = 0.095 * (calcResult.elements["N_NH4"] / 14.0067 + 2 * calcResult.elements["Ca"] / 40.078 + 2 * calcResult.elements["Mg"] / 24.305 + calcResult.elements["K"] / 39.0983 + calcResult.elements["Na"] / 22.9898) + 0.19;
-		var ecView = document.getElementById("ecView");
-		ecView.innerHTML = +ec.toFixed(3);
-
-
-	}
+    var ions = {
+        "S": -2,
+        "P": -3,
+        "SO3": -2,
+        "N_NO3": -1,
+        "N_NH4": 1,
+        "K": 1,
+        "Mg": 2,
+        "Ca": 2,
+        "Cl": -1
+    };
+    // "Mn": 2, "Cu": 2, "Zn": 2,
 
 
 
 
+    // акварин - 10г, КС - 10г, СМ - 3г 
 
+
+    var selectedFertilizersModel = [];
+    var umolUnits = false;
+    var calcResult = {
+        elements: [],
+        elementsM: [],
+        nitrogenRelatives: 0,
+        ec: 0,
+        ph: 0
+    };
+
+
+    function init() {
+        document.getElementById("umolUnitsController").checked = false;
+        var fertilizersView = document.getElementById("fertilizersView");
+        fertilizersView.innerHTML = "";
+        selectedFertilizersModel = [];
+        fertilizers.forEach(function(item, index) {
+            selectedFertilizersModel[index] = {
+                selected: false,
+                concentration: 0
+            };
+            if (fertilizers[index]["N"] == 0 || fertilizers[index]["N"] == null) {
+                fertilizers[index]["N"] = 0;
+                if (fertilizers[index]["N_NO3"] != null)
+                    fertilizers[index]["N"] += fertilizers[index]["N_NO3"];
+                if (fertilizers[index]["N_NH4"] != null)
+                    fertilizers[index]["N"] += fertilizers[index]["N_NH4"];
+            } else {
+                if (fertilizers[index]["N"] != fertilizers[index]["N_NO3"] + fertilizers[index]["N_NH4"]) alert("Fertilizer " + fertilizers[index][name] + " nitrogen error!")
+            }
+
+            //fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + "<br>";
+
+            if (item["desc"] == undefined) item["desc"] = "";
+            if (item["name"] != null) {
+                hrf = "<small><i> " + item["desc"] + " </i></small> "
+            } else {
+                hrf = "X"
+            };
+            fertilizersView.innerHTML += "<input type=checkbox id=" + "fertilizersView[" + index + "]" + "> " + item["name"] + hrf + " <br>";
+
+
+
+        });
+
+        tableHeadUpdate();
+
+        var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
+        elements.forEach(function(item, index) {
+            tElementsAmount += "<td>" + "0" + "</td>";
+        });
+        tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
+        var elementsAmountView = document.getElementById("elementsAmountView");
+        elementsAmountView.innerHTML = tElementsAmount;
+    }
+
+    function selectedFertilizersModelUpdate() {
+        fertilizers.forEach(function(item, index) {
+            var ch = document.getElementById("fertilizersView[" + index + "]");
+            selectedFertilizersModel[index].selected = ch.checked;
+            var concentrationInput = document.getElementById(`concentrationInput${index}`);
+            if (document.getElementById(`concentrationInput${index}`) != null) {
+                selectedFertilizersModel[index].concentration = parseFloat(concentrationInput.value); //CalcMolarWeight
+            } else {
+                selectedFertilizersModel[index].concentration = 0;
+            }
+        });
+
+
+        selectedFertilizersModel.forEach(function(item, index) {
+            selectedFertilizersModel[index].elements = [];
+            selectedFertilizersModel[index].elementsM = [];
+            if (item.selected == true) {
+                var weight = item.concentration;
+                elements.forEach(function(eitem) {
+                    var conc = fertilizers[index][eitem];
+                    if (conc == null) {
+                        conc = 0;
+                    }
+                    var eWeight = conc / 100.0 * weight;
+                    selectedFertilizersModel[index].elements[eitem] = eWeight;
+                    selectedFertilizersModel[index].elementsM[eitem] = eWeight / atomic_weights[eitem];
+                });
+
+            }
+        });
+    }
+
+    function selectedFertilizersViewUpdate() {
+        selectedFertilizersModel.forEach(function(item, index) {
+            var row = document.getElementById("selectedFertilizersViewItem" + index);
+            if (item.selected == false && row != null) {
+                row.hidden = true;
+            } else if (item.selected == true) {
+                if (row != null) {
+                    row.hidden = false;
+                    var trow = `<td>${fertilizers[index].name}</td><td><input type='edit' id='concentrationInput${index}' value='${item.concentration}'></td>`;
+                    elements.forEach(function(eitem) {
+                        var val = (umolUnits == false) ? +item.elements[eitem].toFixed(4) : +item.elementsM[eitem].toFixed(4);
+                        trow += "<td>" + val + "</td>";
+                    });
+                    row.innerHTML = trow;
+
+                } else {
+                    var selectedFertilizersView = document.getElementById("selectedFertilizersView");
+                    var trow = `<td>${fertilizers[index].name}</td><td><input type='edit' id='concentrationInput${index}' value='0'></td>`;
+                    elements.forEach(function(eitem) {
+                        trow += "<td>" + 0 + "</td>";
+                    });
+                    selectedFertilizersView.innerHTML += `<tr id="selectedFertilizersViewItem${index}">${trow}</tr>`;
+                }
+            }
+        });
+    }
+
+    function tableHeadUpdate() {
+        var thead = "<td>Удобрения</td><td>Концентрация, мг/л</td>";
+        elements.forEach(function(item, index) {
+            var text = item;
+            if (ions[item] >= 1) {
+                text = "<font color='red'>" + text + "</font>";
+            } else if (ions[item] <= -1) {
+                text = "<font color='blue'>" + text + "</font>";
+            }
+            thead += (umolUnits == false) ? "<td>" + text + ", мг/л</td>" : "<td>" + text + ", ммоль/л</td>";
+        });
+        var selectedFertilizersViewHead = document.getElementById("selectedFertilizersViewHead");
+        selectedFertilizersViewHead.innerHTML = thead;
+    }
+
+    function umolUnitsChanged() {
+        var ch = document.getElementById("umolUnitsController");
+        umolUnits = ch.checked;
+        tableHeadUpdate();
+        selectedFertilizersModelUpdate();
+        selectedFertilizersViewUpdate();
+        calculate();
+        UpdateCalcResultsView();
+    }
+
+
+    function selectedFertilizersControllerEvent() {
+        selectedFertilizersModelUpdate();
+        selectedFertilizersViewUpdate();
+        calculate();
+        UpdateCalcResultsView();
+    }
+
+    function calculate() {
+        calcResult.elements = [];
+        calcResult.elementsM = [];
+
+
+        selectedFertilizersModel.forEach(function(item, index) {
+            if (item.selected == true) {
+                elements.forEach(function(eitem) {
+                    if (calcResult.elements[eitem] == null)
+                        calcResult.elements[eitem] = 0;
+                    if (calcResult.elementsM[eitem] == null)
+                        calcResult.elementsM[eitem] = 0;
+                    calcResult.elements[eitem] += item.elements[eitem];
+                    calcResult.elementsM[eitem] += item.elementsM[eitem];
+                });
+            }
+        });
+
+        calcResult.nitrogenRelatives = calcResult.elements["N_NO3"] / calcResult.elements["N_NH4"];
+        calcResult.nitrogenNH4PercentRelatives = 100.0 * calcResult.elements["N_NH4"] / calcResult.elements["N"];
+
+
+
+    }
+
+    function UpdateCalcResultsView() {
+        console.log(calcResult);
+
+        if (calcResult.elements["N_NH4"] == null) calcResult.elements["N_NH4"] = 0;
+        if (calcResult.elements["Ca"] == null) calcResult.elements["Ca"] = 0;
+        if (calcResult.elements["Mg"] == null) calcResult.elements["Mg"] = 0;
+        if (calcResult.elements["K"] == null) calcResult.elements["K"] = 0;
+        if (calcResult.elements["Na"] == null) calcResult.elements["Na"] = 0;
+
+        // вывод полного соотношения элементов
+        var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
+        elements.forEach(function(item, index) {
+            tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.elements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.elementsM[item].toFixed(4) + "</td>";
+        });
+        tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
+        var elementsAmountView = document.getElementById("elementsAmountView");
+        elementsAmountView.innerHTML = tElementsAmount;
+
+        var nitrogenRelativesView = document.getElementById("nitrogenRelativesView");
+        nitrogenRelativesView.innerHTML = `N(NO3-):N(NH4+)=${ +calcResult.nitrogenRelatives.toFixed(1)}, N(NH4+):N(sum)=${+calcResult.nitrogenNH4PercentRelatives.toFixed(2)}%`;
+
+
+        var n = (umolUnits == false) ? calcResult.elements["N"] : calcResult.elementsM["N"];
+        var p = (umolUnits == false) ? calcResult.elements["P"] : calcResult.elementsM["P"];
+        var k = (umolUnits == false) ? calcResult.elements["K"] : calcResult.elementsM["K"];
+        var ca = (umolUnits == false) ? calcResult.elements["Ca"] : calcResult.elementsM["Ca"];
+        var mg = (umolUnits == false) ? calcResult.elements["Mg"] : calcResult.elementsM["Mg"];
+        var s = (umolUnits == false) ? calcResult.elements["S"] : calcResult.elementsM["S"];
+
+
+        var ProfileRelativesView3 = document.getElementById("ProfileRelativesView3");
+        ProfileRelativesView3.innerHTML = `N:P:K:Ca:Mg:S = 1 : ${(p/n).toFixed(2)} : ${(k/n).toFixed(2)} : ${(ca/n).toFixed(2)} : ${(mg/n).toFixed(2)} : ${(s/n).toFixed(2)}`;
+
+
+        var norma1 = (p <= n && p <= k) ? p : (n <= k && n <= p) ? n : k;
+        var norma2 = (mg <= k && mg <= ca) ? mg : (ca <= k && ca <= mg) ? ca : k;
+        var ProfileRelativesView2 = document.getElementById("ProfileRelativesView2");
+        ProfileRelativesView2.innerHTML = `N:P:K = ${+(n/norma1).toFixed(2)} : ${+(p/norma1).toFixed(2)} : ${+(k/norma1).toFixed(2)}, K:Ca:Mg = ${+(k/norma2).toFixed(2)} : ${+(ca/norma2).toFixed(2)} : ${+(mg/norma2).toFixed(2)}`;
+
+
+
+        var HPGView = document.getElementById("HPGView");
+        HPGView.innerHTML = `N=${+calcResult.elements["N"].toFixed(1)} NO3=${+calcResult.elements["N_NO3"].toFixed(2)} NH4=${+calcResult.elements["N_NH4"].toFixed(2)} P=${+calcResult.elements["P"].toFixed(2)} K=${+calcResult.elements["K"].toFixed(2)} Ca=${+calcResult.elements["Ca"].toFixed(2)} Mg=${+calcResult.elements["Mg"].toFixed(2)} S=${+calcResult.elements["S"].toFixed(2)} Cl=${+calcResult.elements["Cl"].toFixed(2)} Fe=${+calcResult.elements["Fe"].toFixed(2)} Mn=${+calcResult.elements["Mn"].toFixed(2)} B=${+calcResult.elements["B"].toFixed(2)} Zn=${+calcResult.elements["Zn"].toFixed(3)} Cu=${+calcResult.elements["Cu"].toFixed(3)} Mo=${+calcResult.elements["Mo"].toFixed(3)} Co=0 Si=0`;
+
+        var ProfileRelativesView1 = document.getElementById("ProfileRelativesView1");
+        ProfileRelativesView1.innerHTML = `N:K=${(n/k).toFixed(2)}, K:Ca=${(k/ca).toFixed(2)}, K:Mg=${(k/mg).toFixed(2)}, P=${p}`;
+
+
+
+
+        var ec = 0.095 * (calcResult.elements["N_NH4"] / 14.0067 + 2 * calcResult.elements["Ca"] / 40.078 + 2 * calcResult.elements["Mg"] / 24.305 + calcResult.elements["K"] / 39.0983 + calcResult.elements["Na"] / 22.9898) + 0.19;
+        var ecView = document.getElementById("ecView");
+        ecView.innerHTML = +ec.toFixed(3);
+
+
+    }
 </script>
 
 <body onload="init()">
 
-	<form onchange="selectedFertilizersControllerEvent()">
-		<p><b>Выбор компонентов раствора</b> (удобрения с амидным азотом не добавляются по причине его минимального усвоения
-			корнями)
-		</p>
-		<p id=fertilizersView>
-		</p>
-	</form>
+    <form onchange="selectedFertilizersControllerEvent()">
+        <p><b>Выбор компонентов раствора</b> (удобрения с амидным азотом не добавляются по причине его минимального усвоения корнями)
+        </p>
+        <p id=fertilizersView>
+        </p>
+    </form>
 
-	<table style="width:100%">
-		<thead>
-			<tr id="selectedFertilizersViewHead">
-			</tr>
-		</thead>
-		<tbody id="selectedFertilizersView" onchange="selectedFertilizersControllerEvent()">
-		</tbody>
-		<tfoot id="elementsAmountView">
+    <table style="width:100%">
+        <thead>
+            <tr id="selectedFertilizersViewHead">
+            </tr>
+        </thead>
+        <tbody id="selectedFertilizersView" onchange="selectedFertilizersControllerEvent()">
+        </tbody>
+        <tfoot id="elementsAmountView">
 
-		</tfoot>
-	</table>
-	<br>
-	<table style="width:40%">
-		<thead>
-			<tr>
-				<td>Соотношени</td>
-				<td>Значение</td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>N:P:K нормированное</td>
-				<td id="NPKRelativesView">0:0:0</td>
-			</tr>
-			<tr>
-				<td>K:Ca:Mg нормированное</td>
-				<td id="KCaMgRelativesView">0:0:0</td>
-			</tr>
-			<tr>
-				<td>N:K нормированное</td>
-				<td id="NKRelativesView">0:0</td>
-			</tr>
+        </tfoot>
+    </table>
+    <br>
+    <table style="width:40%">
+        <thead>
+            <tr>
+                <td>Соотношени</td>
+                <td>Значение</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Соотношения [1]</td>
+                <td id="ProfileRelativesView1">N:K=?, K:Ca=?, K:Mg=?, P=?</td>
+            </tr>
+            <tr>
+                <td>Соотношения [2]</td>
+                <td id="ProfileRelativesView2">N:P:K=?:?:?, K:Ca:Mg=?:?:?</td>
+            </tr>
 
-			<tr>
-				<td>N(NO3-):N(NH4+-)</td>
-				<td id="nitrogenRelativesView">0:0</td>
-			</tr>
-			<tr>
-				<td>N(NH4+):N(summ), %</td>
-				<td id="nitrogenNH4percentRelativesView">0:0</td>
-			</tr>
-			<tr>
-				<td>EC рассчетный, мСм/см</td>
-				<td id="ecView">0</td>
-			</tr>
+            <tr>
+                <td>Соотношения [3]</td>
+                <td id="ProfileRelativesView3">N:P:K:Ca:Mg:S=1:?:?:?:?:?</td>
+            </tr>
 
+            <tr>
+                <td>Формы азота</td>
+                <td id="nitrogenRelativesView">N(NO3-):N(NH4+)=?, N(NH4+):N(sum)=?</td>
+            </tr>
 
+            <tr>
+                <td>EC рассчетный, мСм/см</td>
+                <td id="ecView">0</td>
+            </tr>
 
-
-		</tbody>
-
-	</table>
+            <tr>
+                <td>Для вставки в HPG</td>
+                <td id="HPGView">N=0 NO3=0 NH4=0 P=0 K=0 Ca=0 Mg=0 S=0 Cl=0 Fe=0 Mn=0 B=0 Zn=0 Cu=0 Mo=0 Co=0 Si=0 </td>
+            </tr>
 
 
+        </tbody>
 
-	<form>
-		<input type=checkbox id="umolUnitsController" onchange="umolUnitsChanged()" checked="false">ммоль/л вместо
-		мг/л<br>
+    </table>
 
 
 
-		<p style="visibility: hidden;"><b>EC, мкСм/см:</b></p>
-		<p id=ecView>
-		</p>
-	</form>
+    <form>
+        <input type=checkbox id="umolUnitsController" onchange="umolUnitsChanged()" checked="false">ммоль/л вместо мг/л
+        <br>
 
-	writed by Egor Tryakshin, 2019-2020 <br>
-	tg: @zeromind, inst:<a href="https://instagram.com/meveric.iot">meveric.iot</a><br>
-	Создано при поддержке <a href="https://otree.ru/">OrangeTree</a>, <a href="https://t.me/ponics_ru">@ponics_ru</a>, <a
-		href="https://t-do.ru/joinchat/Ef_eu0bCIkePVJ4-LOLRGQ">
+
+
+        <p style="visibility: hidden;"><b>EC, мкСм/см:</b></p>
+        <p id=ecView>
+        </p>
+    </form>
+
+    writed by Egor Tryakshin, 2019-2020 <br> tg: @zeromind, inst:<a href="https://instagram.com/meveric.iot">meveric.iot</a><br> Создано при поддержке <a href="https://otree.ru/">OrangeTree</a>, <a href="https://t.me/ponics_ru">@ponics_ru</a>, <a href="https://t-do.ru/joinchat/Ef_eu0bCIkePVJ4-LOLRGQ">
 		#Klubnika_project</a>
 
 </body>
