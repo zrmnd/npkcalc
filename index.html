@@ -746,7 +746,7 @@
 
 
         var ProfileRelativesView3 = document.getElementById("ProfileRelativesView3");
-        ProfileRelativesView3.innerHTML = `N:P:K:Ca:Mg:S = 1 : ${(p/n).toFixed(2)} : ${(k/n).toFixed(2)} : ${(ca/n).toFixed(2)} : ${(mg/n).toFixed(2)} : ${(s/n).toFixed(2)}`;
+        ProfileRelativesView3.innerHTML = `N:P:K:Ca:Mg:S = 1 : ${+(p/n).toFixed(2)} : ${+(k/n).toFixed(2)} : ${+(ca/n).toFixed(2)} : ${+(mg/n).toFixed(2)} : ${+(s/n).toFixed(2)}`;
 
 
         var norma1 = (p <= n && p <= k) ? p : (n <= k && n <= p) ? n : k;
@@ -760,7 +760,7 @@
         HPGView.innerHTML = `N=${+calcResult.elements["N"].toFixed(1)} NO3=${+calcResult.elements["N_NO3"].toFixed(2)} NH4=${+calcResult.elements["N_NH4"].toFixed(2)} P=${+calcResult.elements["P"].toFixed(2)} K=${+calcResult.elements["K"].toFixed(2)} Ca=${+calcResult.elements["Ca"].toFixed(2)} Mg=${+calcResult.elements["Mg"].toFixed(2)} S=${+calcResult.elements["S"].toFixed(2)} Cl=${+calcResult.elements["Cl"].toFixed(2)} Fe=${+calcResult.elements["Fe"].toFixed(2)} Mn=${+calcResult.elements["Mn"].toFixed(2)} B=${+calcResult.elements["B"].toFixed(2)} Zn=${+calcResult.elements["Zn"].toFixed(3)} Cu=${+calcResult.elements["Cu"].toFixed(3)} Mo=${+calcResult.elements["Mo"].toFixed(3)} Co=0 Si=0`;
 
         var ProfileRelativesView1 = document.getElementById("ProfileRelativesView1");
-        ProfileRelativesView1.innerHTML = `N:K=${(n/k).toFixed(2)}, K:Ca=${(k/ca).toFixed(2)}, K:Mg=${(k/mg).toFixed(2)}, P=${p}`;
+        ProfileRelativesView1.innerHTML = `N:K=${+(n/k).toFixed(2)}, K:Ca=${+(k/ca).toFixed(2)}, K:Mg=${+(k/mg).toFixed(2)}, P=${+p.toFixed(1)}`;
 
 
 
