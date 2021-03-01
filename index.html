@@ -585,10 +585,13 @@
     var calcResult = {
         elements: [],
         elementsM: [],
+        scaledElements: [],
+        scaledElementsM: [],
         nitrogenRelatives: 0,
         ec: 0,
         ph: 0
     };
+    var scale = 1.0;
 
 
     function init() {
@@ -634,6 +637,7 @@
         tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
         var elementsAmountView = document.getElementById("elementsAmountView");
         elementsAmountView.innerHTML = tElementsAmount;
+        document.getElementById("solutionScale").value = 1.0;
     }
 
     function selectedFertilizersModelUpdate() {
@@ -728,9 +732,15 @@
         UpdateCalcResultsView();
     }
 
+    function isNotPresent(val) {
+        return val === null || val === undefined ? true : false;
+    }
+
     function calculate() {
         calcResult.elements = [];
         calcResult.elementsM = [];
+        calcResult.scaledElements = [];
+        calcResult.scaledElementsM = [];
 
 
         selectedFertilizersModel.forEach(function(item, index) {
@@ -738,34 +748,49 @@
                 elements.forEach(function(eitem) {
                     if (calcResult.elements[eitem] == null)
                         calcResult.elements[eitem] = 0;
+
                     if (calcResult.elementsM[eitem] == null)
                         calcResult.elementsM[eitem] = 0;
                     calcResult.elements[eitem] += item.elements[eitem];
                     calcResult.elementsM[eitem] += item.elementsM[eitem];
+                    calcResult.scaledElements[eitem] = calcResult.elements[eitem] * scale;
+                    calcResult.scaledElementsM[eitem] = calcResult.elementsM[eitem] * scale;
                 });
             }
         });
 
+        var elem_full = elements.concat(["Na"]);
+        console.log(elem_full);
+        elem_full.forEach(function(item, index) {
+            if (isNotPresent(calcResult.elements[item]))
+                calcResult.elements[item] = 0;
+            if (isNotPresent(calcResult.elementsM[item]))
+                calcResult.elementsM[item] = 0;
+            if (isNotPresent(calcResult.scaledElements[item]))
+                calcResult.scaledElements[item] = 0;
+            if (isNotPresent(calcResult.scaledElementsM[item]))
+                calcResult.scaledElementsM[item] = 0;
+        });
+
+
         calcResult.nitrogenRelatives = calcResult.elements["N_NO3"] / calcResult.elements["N_NH4"];
         calcResult.nitrogenNH4PercentRelatives = 100.0 * calcResult.elements["N_NH4"] / calcResult.elements["N"];
-
-
-
     }
 
     function UpdateCalcResultsView() {
         console.log(calcResult);
 
-        if (calcResult.elements["N_NH4"] == null) calcResult.elements["N_NH4"] = 0;
-        if (calcResult.elements["Ca"] == null) calcResult.elements["Ca"] = 0;
-        if (calcResult.elements["Mg"] == null) calcResult.elements["Mg"] = 0;
-        if (calcResult.elements["K"] == null) calcResult.elements["K"] = 0;
-        if (calcResult.elements["Na"] == null) calcResult.elements["Na"] = 0;
+
 
         // вывод полного соотношения элементов
         var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
         elements.forEach(function(item, index) {
             tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.elements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.elementsM[item].toFixed(4) + "</td>";
+        });
+        tElementsAmount += "</tr><tr>";
+        tElementsAmount += "<td></td><td>с учетом множителя</td>";
+        elements.forEach(function(item, index) {
+            tElementsAmount += (umolUnits == false) ? "<td>" + +calcResult.scaledElements[item].toFixed(4) + "</td>" : "<td>" + +calcResult.scaledElementsM[item].toFixed(4) + "</td>";
         });
         tElementsAmount = "<tr>" + tElementsAmount + "</tr>";
         var elementsAmountView = document.getElementById("elementsAmountView");
@@ -795,7 +820,7 @@
 
 
         var HPGView = document.getElementById("HPGView");
-        HPGView.innerHTML = `N=${+calcResult.elements["N"].toFixed(1)} NO3=${+calcResult.elements["N_NO3"].toFixed(2)} NH4=${+calcResult.elements["N_NH4"].toFixed(2)} P=${+calcResult.elements["P"].toFixed(2)} K=${+calcResult.elements["K"].toFixed(2)} Ca=${+calcResult.elements["Ca"].toFixed(2)} Mg=${+calcResult.elements["Mg"].toFixed(2)} S=${+calcResult.elements["S"].toFixed(2)} Cl=${+calcResult.elements["Cl"].toFixed(2)} Fe=${+calcResult.elements["Fe"].toFixed(2)} Mn=${+calcResult.elements["Mn"].toFixed(2)} B=${+calcResult.elements["B"].toFixed(2)} Zn=${+calcResult.elements["Zn"].toFixed(3)} Cu=${+calcResult.elements["Cu"].toFixed(3)} Mo=${+calcResult.elements["Mo"].toFixed(3)} Co=0 Si=0`;
+        HPGView.innerHTML = `N=${+calcResult.scaledElements["N"].toFixed(1)} NO3=${+calcResult.scaledElements["N_NO3"].toFixed(2)} NH4=${+calcResult.scaledElements["N_NH4"].toFixed(2)} P=${+calcResult.scaledElements["P"].toFixed(2)} K=${+calcResult.scaledElements["K"].toFixed(2)} Ca=${+calcResult.scaledElements["Ca"].toFixed(2)} Mg=${+calcResult.scaledElements["Mg"].toFixed(2)} S=${+calcResult.scaledElements["S"].toFixed(2)} Cl=${+calcResult.scaledElements["Cl"].toFixed(2)} Fe=${+calcResult.scaledElements["Fe"].toFixed(2)} Mn=${+calcResult.scaledElements["Mn"].toFixed(2)} B=${+calcResult.scaledElements["B"].toFixed(2)} Zn=${+calcResult.scaledElements["Zn"].toFixed(3)} Cu=${+calcResult.scaledElements["Cu"].toFixed(3)} Mo=${+calcResult.scaledElements["Mo"].toFixed(3)} Co=0 Si=0`;
 
         var ProfileRelativesView1 = document.getElementById("ProfileRelativesView1");
         ProfileRelativesView1.innerHTML = `N:K=${+(n/k).toFixed(2)}, K:Ca=${+(k/ca).toFixed(2)}, K:Mg=${+(k/mg).toFixed(2)}, P=${+p.toFixed(1)}`;
@@ -803,11 +828,35 @@
 
 
 
-        var ec = 0.095 * (calcResult.elements["N_NH4"] / 14.0067 + 2 * calcResult.elements["Ca"] / 40.078 + 2 * calcResult.elements["Mg"] / 24.305 + calcResult.elements["K"] / 39.0983 + calcResult.elements["Na"] / 22.9898) + 0.19;
+        var ec = 0.095 * (calcResult.scaledElements["N_NH4"] / 14.0067 + 2 * calcResult.scaledElements["Ca"] / 40.078 + 2 * calcResult.scaledElements["Mg"] / 24.305 + calcResult.scaledElements["K"] / 39.0983 + calcResult.scaledElements["Na"] / 22.9898) + 0.19;
         var ecView = document.getElementById("ecView");
         ecView.innerHTML = +ec.toFixed(3);
 
 
+    }
+
+
+    function scaleChanged() {
+        scale = document.getElementById("solutionScale").value;
+        console.log(scale);
+        calculate();
+        UpdateCalcResultsView();
+    }
+
+
+    function updateSolutionByScale() {
+        fertilizers.forEach(function(item, index) {
+            if (selectedFertilizersModel[index].concentration != null) {
+                selectedFertilizersModel[index].concentration *= scale;
+            }
+        });
+        scale = 1.0;
+        document.getElementById("solutionScale").value = scale;
+        selectedFertilizersViewUpdate();
+        selectedFertilizersModelUpdate();
+        selectedFertilizersViewUpdate();
+        calculate();
+        UpdateCalcResultsView();
     }
 </script>
 
@@ -830,6 +879,21 @@
         <tfoot id="elementsAmountView">
 
         </tfoot>
+    </table>
+    <br>
+    <table style="width:40%">
+        <thead>
+            <tr>
+                <td>Подгонка ЕС (множитель)</td>
+                <td>Коррекция рецепта</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type='number' step="0.01" id='solutionScale' onchange="scaleChanged()"></td>
+                <td><button onclick="updateSolutionByScale()">произвести!</button></td>
+            </tr>
+        </tbody>
     </table>
     <br>
     <table style="width:40%">
@@ -869,6 +933,10 @@
                 <td id="HPGView">N=0 NO3=0 NH4=0 P=0 K=0 Ca=0 Mg=0 S=0 Cl=0 Fe=0 Mn=0 B=0 Zn=0 Cu=0 Mo=0 Co=0 Si=0 </td>
             </tr>
 
+            <!--tr>
+                <td>Приготовление раствора</td>
+                <td id="solutionView"></td>
+            </tr-->
 
         </tbody>
 
