@@ -640,13 +640,19 @@
         document.getElementById("solutionScale").value = 1.0;
     }
 
+
+    function solve(s) {
+        return eval(s.replace(/[^0-9\(\)\+\-\*\/\.]/g, ""));
+    }
+
+
     function selectedFertilizersModelUpdate() {
         fertilizers.forEach(function(item, index) {
             var ch = document.getElementById("fertilizersView[" + index + "]");
             selectedFertilizersModel[index].selected = ch.checked;
             var concentrationInput = document.getElementById(`concentrationInput${index}`);
             if (document.getElementById(`concentrationInput${index}`) != null) {
-                selectedFertilizersModel[index].concentration = parseFloat(concentrationInput.value); //CalcMolarWeight
+                selectedFertilizersModel[index].concentration = solve(concentrationInput.value); // parseFloat(concentrationInput.value); //CalcMolarWeight
             } else {
                 selectedFertilizersModel[index].concentration = 0;
             }
@@ -779,9 +785,6 @@
 
     function UpdateCalcResultsView() {
         console.log(calcResult);
-
-
-
         // вывод полного соотношения элементов
         var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
         elements.forEach(function(item, index) {
