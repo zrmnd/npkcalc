@@ -871,11 +871,11 @@
         var feedingPower = document.getElementById("feedingPower").value;
         var resVol = solutionVol / feedingPower;
         document.getElementById("feedingVolume").innerHTML = `${+resVol.toFixed(1)}л + ${+resVol.toFixed(1)}л`;
-        var res = '';
+        var res = '<tr><td colspan="2"><b>Рецепт</b></td></tr>';
 
         selectedFertilizersModel.forEach(function(item, index) {
             if (item.selected == true) {
-                res += `<tr><td>${fertilizers[index].name}</td><td>${+(item.concentration*solutionVol/1000).toFixed(1)}</td></tr>`;
+                res += `<tr><td>${fertilizers[index].name}, г</td><td>${+(item.concentration*solutionVol/1000).toFixed(1)}</td></tr>`;
             }
         });
         document.getElementById("feedingResult").innerHTML = res;
@@ -922,7 +922,7 @@
     <table style="width:40%">
         <thead>
             <tr>
-                <td>Соотношени</td>
+                <td><b>Результат</b></td>
                 <td>Значение</td>
             </tr>
         </thead>
@@ -969,7 +969,7 @@
     <table style="width:40%">
         <thead>
             <tr>
-                <td colspan="2">Расчет концентратов</td>
+                <td colspan="2"><b>Расчет концентратов</b></td>
                 <!--td>Коррекция рецепта</td-->
             </tr>
         </thead>
@@ -988,9 +988,7 @@
                 <td>Объемы концентратов А, Б:</td>
                 <td id="feedingVolume">???</td>
             </tr>
-            <tr>
-                <td colspan="2">Рецепт</td>
-            </tr>
+
         </tbody>
     </table>
 
@@ -1005,7 +1003,7 @@
         </p>
     </form>
 
-    writed by Egor Tryakshin, 2019-2020 <br> tg: @zeromind, inst:<a href="https://instagram.com/meveric.iot">meveric.iot</a><br> Создано при поддержке <a href="https://otree.ru/">OrangeTree</a>, <a href="https://t.me/ponics_ru">@ponics_ru</a>, <a href="https://t-do.ru/joinchat/Ef_eu0bCIkePVJ4-LOLRGQ">
+    writed by Egor Tryakshin, 2019-2021 <br> tg: @zeromind, inst:<a href="https://instagram.com/meveric.iot">meveric.iot</a><br> Создано при поддержке <a href="https://otree.ru/">OrangeTree</a>, <a href="https://t.me/ponics_ru">@ponics_ru</a>, <a href="https://t-do.ru/joinchat/Ef_eu0bCIkePVJ4-LOLRGQ">
 		#Klubnika_project</a>
 
 </body>
