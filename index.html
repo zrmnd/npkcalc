@@ -874,7 +874,7 @@
         var res = '<tr><td colspan="2"><b>Рецепт</b></td></tr>';
 
         selectedFertilizersModel.forEach(function(item, index) {
-            if (item.selected == true) {
+            if (item.selected == true && item.concentration != 0) {
                 res += `<tr><td>${fertilizers[index].name}, г</td><td>${+(item.concentration*solutionVol/1000).toFixed(1)}</td></tr>`;
             }
         });
