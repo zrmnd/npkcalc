@@ -826,7 +826,7 @@
         HPGView.innerHTML = `N=${+calcResult.scaledElements["N"].toFixed(1)} NO3=${+calcResult.scaledElements["N_NO3"].toFixed(2)} NH4=${+calcResult.scaledElements["N_NH4"].toFixed(2)} P=${+calcResult.scaledElements["P"].toFixed(2)} K=${+calcResult.scaledElements["K"].toFixed(2)} Ca=${+calcResult.scaledElements["Ca"].toFixed(2)} Mg=${+calcResult.scaledElements["Mg"].toFixed(2)} S=${+calcResult.scaledElements["S"].toFixed(2)} Cl=${+calcResult.scaledElements["Cl"].toFixed(2)} Fe=${+calcResult.scaledElements["Fe"].toFixed(2)} Mn=${+calcResult.scaledElements["Mn"].toFixed(2)} B=${+calcResult.scaledElements["B"].toFixed(2)} Zn=${+calcResult.scaledElements["Zn"].toFixed(3)} Cu=${+calcResult.scaledElements["Cu"].toFixed(3)} Mo=${+calcResult.scaledElements["Mo"].toFixed(3)} Co=0 Si=0`;
 
         var ProfileRelativesView1 = document.getElementById("ProfileRelativesView1");
-        ProfileRelativesView1.innerHTML = `N:K=${+(n/k).toFixed(2)}, K:Ca=${+(k/ca).toFixed(2)}, K:Mg=${+(k/mg).toFixed(2)}, P=${+p.toFixed(1)}`;
+        ProfileRelativesView1.innerHTML = `N:K=${+(n/k).toFixed(2)}, K:Ca=${+(k/ca).toFixed(2)}, K:Mg=${+(k/mg).toFixed(2)}, P=${+(p*scale).toFixed(1)}`;
 
 
 
@@ -835,7 +835,7 @@
         var ecView = document.getElementById("ecView");
         ecView.innerHTML = +ec.toFixed(3);
 
-
+        feedingsCalculateAndUpdateView();
     }
 
 
@@ -860,6 +860,26 @@
         selectedFertilizersViewUpdate();
         calculate();
         UpdateCalcResultsView();
+    }
+
+
+
+
+
+    function feedingsCalculateAndUpdateView() {
+        var solutionVol = document.getElementById("solutionVolume").value;
+        var feedingPower = document.getElementById("feedingPower").value;
+        var resVol = solutionVol / feedingPower;
+        document.getElementById("feedingVolume").innerHTML = `${+resVol.toFixed(1)}л + ${+resVol.toFixed(1)}л`;
+        var res = '';
+
+        selectedFertilizersModel.forEach(function(item, index) {
+            if (item.selected == true) {
+                res += `<tr><td>${fertilizers[index].name}</td><td>${+(item.concentration*solutionVol/1000).toFixed(1)}</td></tr>`;
+            }
+        });
+        document.getElementById("feedingResult").innerHTML = res;
+
     }
 </script>
 
@@ -945,7 +965,34 @@
 
     </table>
 
+    <br>
+    <table style="width:40%">
+        <thead>
+            <tr>
+                <td colspan="2">Расчет концентратов</td>
+                <!--td>Коррекция рецепта</td-->
+            </tr>
+        </thead>
+        <tfoot id="feedingResult"></tfoot>
+        <tbody>
+            <tr>
+                <td>Объем раствора, л</td>
+                <td><input type='number' step="1" min="1" value="500" id='solutionVolume' onchange="feedingsCalculateAndUpdateView()"></td>
+            </tr>
 
+            <tr>
+                <td>Степень разведения, 1 к:</td>
+                <td><input type='number' step="1" min="1" max="1000" id='feedingPower' value="250" onchange="feedingsCalculateAndUpdateView()"></td>
+            </tr>
+            <tr>
+                <td>Объемы концентратов А, Б:</td>
+                <td id="feedingVolume">???</td>
+            </tr>
+            <tr>
+                <td colspan="2">Рецепт</td>
+            </tr>
+        </tbody>
+    </table>
 
     <form>
         <input type=checkbox id="umolUnitsController" onchange="umolUnitsChanged()" checked="false">ммоль/л вместо мг/л
