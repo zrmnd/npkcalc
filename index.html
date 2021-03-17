@@ -800,7 +800,7 @@
         elementsAmountView.innerHTML = tElementsAmount;
 
         var nitrogenRelativesView = document.getElementById("nitrogenRelativesView");
-        nitrogenRelativesView.innerHTML = `N(NO3-):N(NH4+)=${ +calcResult.nitrogenRelatives.toFixed(1)}, N(NH4+):N(sum)=${+calcResult.nitrogenNH4PercentRelatives.toFixed(2)}%`;
+        nitrogenRelativesView.innerHTML = `N(NH4+):N(NO3-)=1:${+calcResult.nitrogenRelatives.toFixed(1)}=${+((1/calcResult.nitrogenRelatives)).toFixed(3)}, N(NH4+):N(sum)=${+calcResult.nitrogenNH4PercentRelatives.toFixed(2)}%`;
 
 
         var n = (umolUnits == false) ? calcResult.elements["N"] : calcResult.elementsM["N"];
@@ -850,7 +850,7 @@
     function updateSolutionByScale() {
         fertilizers.forEach(function(item, index) {
             if (selectedFertilizersModel[index].concentration != null) {
-                selectedFertilizersModel[index].concentration *= scale;
+                selectedFertilizersModel[index].concentration = (scale * selectedFertilizersModel[index].concentration); //.toFixed(3);
             }
         });
         scale = 1.0;
@@ -869,7 +869,7 @@
     function feedingsCalculateAndUpdateView() {
         var solutionVol = document.getElementById("solutionVolume").value;
         var feedingPower = document.getElementById("feedingPower").value;
-        var resVol = solutionVol / feedingPower;
+        var resVol = solutionVol / (feedingPower * 2);
         document.getElementById("feedingVolume").innerHTML = `${+resVol.toFixed(1)}л + ${+resVol.toFixed(1)}л`;
         var res = '<tr><td colspan="2"><b>Рецепт</b></td></tr>';
 
@@ -943,7 +943,7 @@
 
             <tr>
                 <td>Формы азота</td>
-                <td id="nitrogenRelativesView">N(NO3-):N(NH4+)=?, N(NH4+):N(sum)=?</td>
+                <td id="nitrogenRelativesView">N(NH4+):N(NO3-)=?=?%, N(NH4+):N(sum)=?</td>
             </tr>
 
             <tr>
