@@ -471,7 +471,7 @@
         }, {
             name: "Аквамикс СТ",
             desc: "https://www.bhz.ru/catalog/mikroelementy/akvamiks-st/",
-            "Fe": 1.74,
+            "Fe": 3.84,
             "Zn": 0.53,
             "Cu": 0.53,
             "Mn": 2.57,
@@ -595,6 +595,7 @@
 
 
     function init() {
+        console.log(getJsonFromUrl());
         document.getElementById("umolUnitsController").checked = false;
         var fertilizersView = document.getElementById("fertilizersView");
         fertilizersView.innerHTML = "";
@@ -880,6 +881,17 @@
         });
         document.getElementById("feedingResult").innerHTML = res;
 
+    }
+
+    function getJsonFromUrl(url) {
+        if (!url) url = location.search;
+        var query = url.substr(1);
+        var result = {};
+        query.split("&").forEach(function(part) {
+            var item = part.split("=");
+            result[item[0]] = decodeURIComponent(item[1]);
+        });
+        return result;
     }
 </script>
 
