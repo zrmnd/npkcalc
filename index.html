@@ -953,10 +953,17 @@
 
     function getCalcStateCode() {
         var state = {};
-        state['umol'] = umolUnits;
-        state['volume'] = document.getElementById("solutionVolume").value;
-        state['feed_pwr'] = document.getElementById("feedingPower").value;
-        state['sf'] = getActiveFertilizersCode();
+        if (umolUnits)
+            state['umol'] = umolUnits;
+        var solVol = document.getElementById("solutionVolume").value;
+        if (solVol != 500)
+            state['volume'] = solVol;
+        var feedPwr = document.getElementById("feedingPower").value;
+        if (feedPwr != 250)
+            state['feed_pwr'] = feedPwr;
+        var sf = getActiveFertilizersCode();
+        if (sf != '[]')
+            state['sf'] = sf;
         var res = JSON.stringify(state);
         return res;
     }
@@ -1001,7 +1008,8 @@
 
     function getActiveRecepiet() {
         var recepiet = {};
-        recepiet['scale'] = scale;
+        if (scale != 1)
+            recepiet['scale'] = scale;
         selectedFertilizersModel.forEach(function(item, index) {
             if (selectedFertilizersModel[index].selected == true && selectedFertilizersModel[index].concentration != 0) {
                 recepiet[index] = selectedFertilizersModel[index].concentration;
