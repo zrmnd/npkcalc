@@ -374,11 +374,11 @@
         }, {
             name: "KRISTALON  8-11-37+5MgO (томатный) ФЕРТИКА",
             desc: "https://fertika.com/product/dom-sad-i-ogorod/sad-i-ogorod/prod-24/",
-            "N_NO3": 8.1,
-            "P": 4.713,
-            "K": 30.716,
+            "N_NO3": 7.5,
+            "P": 5.24,
+            "K": 29.885,
             "Mg": 2.71,
-            "S": 10,
+            "S": 4,
             "Fe": 0.15,
             "Zn": 0.027,
             "Cu": 0.04,
@@ -627,7 +627,10 @@
 
 
     function init() {
-        console.log(getJsonFromUrl());
+
+
+
+
         document.getElementById("umolUnitsController").checked = false;
         var fertilizersView = document.getElementById("fertilizersView");
         fertilizersView.innerHTML = "";
@@ -671,6 +674,23 @@
         var elementsAmountView = document.getElementById("elementsAmountView");
         elementsAmountView.innerHTML = tElementsAmount;
         document.getElementById("solutionScale").value = 1.0;
+
+        var parameters = getJsonFromUrl();
+        try {
+            var state = parameters["st"];
+            var recepiet = parameters["rcpt"];
+            if (state) {
+                setCalcState(state);
+                hideFullFertilizersList();
+            }
+            if (recepiet) {
+                setActiveRecepiet(recepiet);
+                hideFullFertilizersList();
+            }
+            updateRecepietLink();
+        } catch {
+            console.log('something wrong');
+        }
     }
 
 
@@ -736,6 +756,7 @@
                 }
             }
         });
+        updateRecepietLink();
     }
 
     function tableHeadUpdate() {
@@ -761,6 +782,7 @@
         selectedFertilizersViewUpdate();
         calculate();
         UpdateCalcResultsView();
+        updateRecepietLink();
     }
 
 
@@ -769,6 +791,7 @@
         selectedFertilizersViewUpdate();
         calculate();
         UpdateCalcResultsView();
+        updateRecepietLink();
     }
 
     function isNotPresent(val) {
@@ -799,7 +822,7 @@
         });
 
         var elem_full = elements.concat(["Na"]);
-        console.log(elem_full);
+        //console.log(elem_full);
         elem_full.forEach(function(item, index) {
             if (isNotPresent(calcResult.elements[item]))
                 calcResult.elements[item] = 0;
@@ -817,7 +840,7 @@
     }
 
     function UpdateCalcResultsView() {
-        console.log(calcResult);
+        //console.log(calcResult);
         // вывод полного соотношения элементов
         var tElementsAmount = "<td>Концентрация элементов в растворе</td><td>сумма</td>";
         elements.forEach(function(item, index) {
@@ -869,14 +892,16 @@
         ecView.innerHTML = +ec.toFixed(3);
 
         feedingsCalculateAndUpdateView();
+        updateRecepietLink();
     }
 
 
     function scaleChanged() {
         scale = document.getElementById("solutionScale").value;
-        console.log(scale);
+        //console.log(scale);
         calculate();
         UpdateCalcResultsView();
+        updateRecepietLink();
     }
 
 
@@ -912,7 +937,7 @@
             }
         });
         document.getElementById("feedingResult").innerHTML = res;
-
+        updateRecepietLink();
     }
 
     function getJsonFromUrl(url) {
@@ -925,16 +950,128 @@
         });
         return result;
     }
+
+    function getCalcStateCode() {
+        var state = {};
+        state['umol'] = umolUnits;
+        state['volume'] = document.getElementById("solutionVolume").value;
+        state['feed_pwr'] = document.getElementById("feedingPower").value;
+        state['sf'] = getActiveFertilizersCode();
+        var res = JSON.stringify(state);
+        return res;
+    }
+
+    function setCalcState(code) {
+        var state = {};
+        state = JSON.parse(code);
+        if (state['volume'] != undefined)
+            document.getElementById("solutionVolume").value = state['volume'];
+        if (state['feed_pwr'] != undefined)
+            document.getElementById("feedingPower").value = state['feed_pwr'];
+        if (state['umol'] != undefined && state['umol'] != umolUnits) {
+            document.getElementById("umolUnitsController").checked = state['umol'];
+            umolUnitsChanged();
+        }
+        if (state["sf"] != undefined)
+            setActiveFertilizersByCode(state["sf"]);
+    }
+
+
+
+    function getActiveFertilizersCode() {
+        var selectedFertilizersIndexes = [];
+        selectedFertilizersModel.forEach(function(item, index) {
+            if (selectedFertilizersModel[index].selected == true) {
+                selectedFertilizersIndexes.push(index);
+            }
+        });
+        var res = JSON.stringify(selectedFertilizersIndexes);
+        return res;
+    }
+
+    function setActiveFertilizersByCode(code) {
+        var selectedFertilizersIndexes = [];
+        selectedFertilizersIndexes = JSON.parse(code);
+        selectedFertilizersIndexes.forEach(function(item, index) {
+            document.getElementById("fertilizersView[" + item + "]").checked = true;
+        });
+        selectedFertilizersModelUpdate();
+        selectedFertilizersViewUpdate();
+    }
+
+    function getActiveRecepiet() {
+        var recepiet = {};
+        recepiet['scale'] = scale;
+        selectedFertilizersModel.forEach(function(item, index) {
+            if (selectedFertilizersModel[index].selected == true && selectedFertilizersModel[index].concentration != 0) {
+                recepiet[index] = selectedFertilizersModel[index].concentration;
+            }
+        });
+        var res = JSON.stringify(recepiet);
+        return res;
+    }
+
+    function setActiveRecepiet(code) {
+        var recepiet = {};
+        recepiet = JSON.parse(code);
+        if (recepiet['scale'] != undefined) {
+            document.getElementById("solutionScale").value = recepiet['scale'];
+            scaleChanged();
+        }
+
+        for (var key in recepiet) {
+            var checkbox = document.getElementById("fertilizersView[" + key + "]");
+            if (checkbox !== null && checkbox !== undefined) {
+                checkbox.checked = true;
+            }
+        }
+        selectedFertilizersModelUpdate();
+        selectedFertilizersViewUpdate();
+        for (var key in recepiet) {
+            var input = document.getElementById(`concentrationInput${key}`);
+            if (input !== null && input !== undefined) {
+                input.value = recepiet[key];
+            }
+        }
+        selectedFertilizersControllerEvent();
+    }
+
+
+    function showFullFertilizersList() {
+        document.getElementById("btnShowFullFertilizersList").style.display = "none";
+        document.getElementById("btnHideFullFertilizersList").style.display = "";
+        document.getElementById("fertilizersView").style.display = "";
+    }
+
+    function hideFullFertilizersList() {
+        document.getElementById("btnHideFullFertilizersList").style.display = "none";
+        document.getElementById("btnShowFullFertilizersList").style.display = "";
+        document.getElementById("fertilizersView").style.display = "none";
+    }
+
+    function updateRecepietLink() {
+        var fullstate = window.location.href.split('?')[0] + '?st=' + getCalcStateCode() + '&rcpt=' + getActiveRecepiet();
+        var recepiet = window.location.href.split('?')[0] + '?rcpt=' + getActiveRecepiet();
+        document.getElementById("linkRecepiet").innerHTML = document.getElementById("ProfileRelativesView1").innerHTML + ' - ' + recepiet;
+        document.getElementById("linkRecepiet").href = recepiet;
+        document.getElementById("linkFullState").innerHTML = document.getElementById("ProfileRelativesView1").innerHTML + ' - ' + fullstate;
+        document.getElementById("linkFullState").href = fullstate;
+        //window.location.href = window.location.href.split('?')[0] + '?sf=' + getActiveFertilizersCode() + '&rcpt=' + getActiveRecepiet();
+    }
 </script>
 
 <body onload="init()">
 
+
+    <p><b>Выбор компонентов раствора</b> (удобрения с амидным азотом не добавляются по причине его минимального усвоения корнями)
+    </p>
+    <p><button onclick="showFullFertilizersList()" id="btnShowFullFertilizersList" style="display: none;">выбрать удобрения</button></p>
     <form onchange="selectedFertilizersControllerEvent()">
-        <p><b>Выбор компонентов раствора</b> (удобрения с амидным азотом не добавляются по причине его минимального усвоения корнями)
-        </p>
         <p id=fertilizersView>
         </p>
     </form>
+    <p><button onclick="hideFullFertilizersList()" id="btnHideFullFertilizersList">скрыть список удобрений</button></p>
+
 
     <table style="width:100%">
         <thead>
@@ -1040,12 +1177,21 @@
         <p id=ecView>
         </p>
     </form>
+    <form>
+        <p>Ссылка на рецепт:
+            <a href='' id='linkRecepiet'></a>
+        </p>
+
+        <p>Ссылка на полное состояние окна:
+            <a href='' id='linkFullState'></a>
+        </p>
+    </form>
 
     writed by Egor Tryakshin, 2019-2021 <br> tg: @zeromind, inst:<a href="https://instagram.com/meveric.iot">meveric.iot</a><br> Создано при поддержке <a href="https://otree.ru/">OrangeTree</a>, <a href="https://t.me/ponics_ru">@ponics_ru</a>, <a href="https://t-do.ru/joinchat/Ef_eu0bCIkePVJ4-LOLRGQ">
         #Klubnika_project</a><br>Выразить благодарность автору: <br>[BTC] bc1qzghuflzew8ynl5t55utjsklhd03r4vzm23rep0 <br>
 
-    <iframe src="https://yoomoney.ru/quickpay/button-widget?targets=%D0%BD%D0%B0%20%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D0%B5%20%D0%BA%D0%B0%D0%BB%D1%8C%D0%BA%D1%83%D0%BB%D1%8F%D1%82%D0%BE%D1%80%D0%B0&default-sum=150&button-text=14&any-card-payment-type=on&button-size=m&button-color=orange&successURL=&quickpay=small&account=4100116887691160&"
-        width="184" height="36" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
+    <!--iframe src="https://yoomoney.ru/quickpay/button-widget?targets=%D0%BD%D0%B0%20%D1%80%D0%B0%D0%B7%D0%B2%D0%B8%D1%82%D0%B8%D0%B5%20%D0%BA%D0%B0%D0%BB%D1%8C%D0%BA%D1%83%D0%BB%D1%8F%D1%82%D0%BE%D1%80%D0%B0&default-sum=150&button-text=14&any-card-payment-type=on&button-size=m&button-color=orange&successURL=&quickpay=small&account=4100116887691160&"
+        width="184" height="36" frameborder="0" allowtransparency="true" scrolling="no"></iframe-->
 
 </body>
 
