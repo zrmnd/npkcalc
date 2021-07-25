@@ -964,13 +964,13 @@
         var sf = getActiveFertilizersCode();
         if (sf != '[]')
             state['sf'] = sf;
-        var res = JSON.stringify(state);
+        var res = btoa(JSON.stringify(state));
         return res;
     }
 
     function setCalcState(code) {
         var state = {};
-        state = JSON.parse(code);
+        state = JSON.parse(atob(code));
         if (state['volume'] != undefined)
             document.getElementById("solutionVolume").value = state['volume'];
         if (state['feed_pwr'] != undefined)
@@ -1015,13 +1015,13 @@
                 recepiet[index] = selectedFertilizersModel[index].concentration;
             }
         });
-        var res = JSON.stringify(recepiet);
+        var res = btoa(JSON.stringify(recepiet));
         return res;
     }
 
     function setActiveRecepiet(code) {
         var recepiet = {};
-        recepiet = JSON.parse(code);
+        recepiet = JSON.parse(atob(code));
         if (recepiet['scale'] != undefined) {
             document.getElementById("solutionScale").value = recepiet['scale'];
             scaleChanged();
